@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"github.com/ebarkie/aprs"
 	"log"
-	"osuAPRS/aprsHelper"
-	"osuAPRS/commands/general"
+	"simpleAPRSbot-go/aprsHelper"
+	"simpleAPRSbot-go/commands/general"
 	"strings"
 )
 

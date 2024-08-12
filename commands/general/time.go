@@ -2,7 +2,7 @@ package general
 
 import (
 	"github.com/ebarkie/aprs"
-	"osuAPRS/aprsHelper"
+	"simpleAPRSbot-go/aprsHelper"
 	"time"
 )
 

@@ -1,4 +1,4 @@
-module osuAPRS
+module simpleAPRSbot-go
 
 go 1.22
 

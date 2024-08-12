@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/ebarkie/aprs"
 	"math/rand/v2"
-	"osuAPRS/aprsHelper"
+	"simpleAPRSbot-go/aprsHelper"
 	"strconv"
 	"strings"
 )

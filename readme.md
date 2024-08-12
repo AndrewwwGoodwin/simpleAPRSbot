@@ -8,5 +8,5 @@ https://aprs.fi/
 
 Special shout out to the people @ https://github.com/ebarkie/aprs.
 
-## Required Env Vars
+## Required Process Flags
 -APRS_CALL=N0CALL-0 -APRS_PASS=12345

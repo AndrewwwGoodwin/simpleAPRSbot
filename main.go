@@ -39,7 +39,7 @@ func main() {
 			fmt.Println(f)
 
 			aprsHelper.SendAck(f)
-			if strings.HasPrefix(f.Text, ":KQ4NRT-6 :!") {
+			if strings.HasPrefix(f.Text, ":"+aprsHelper.EnsureLength(*aprsCALL)+":!") {
 				//strip the prefix
 				commandName := strings.ToLower(strings.Split(aprsHelper.ExtractCommand(f.Text), " ")[0])
 				commandArgs, _ := aprsHelper.ExtractArgs(aprsHelper.ExtractCommand(f.Text))

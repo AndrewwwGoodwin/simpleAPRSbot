@@ -3,10 +3,8 @@ package general
 import (
 	"fmt"
 	"github.com/ebarkie/aprs"
-	"math/rand/v2"
 	"simpleAPRSbot-go/aprsFiWrapper"
 	"simpleAPRSbot-go/aprsHelper"
-	"strconv"
 )
 
 func Location(args []string, f aprs.Frame, apiKey string) {
@@ -39,6 +37,6 @@ func Location(args []string, f aprs.Frame, apiKey string) {
 	// in the future I want to send this lat/long off to some geocoding api
 	// which will then return a lot more detailed information such as city,state zipcode, county, coordinates,
 	// how long ago, via aprs.fi
-	aprsHelper.AprsTextReply(locationData.Lat+" "+locationData.Lng+" via aprs.fi"+" "+strconv.Itoa(rand.IntN(999)), f)
+	aprsHelper.AprsTextReply(locationData.Lat+" "+locationData.Lng+" via aprs.fi", f)
 	return
 }

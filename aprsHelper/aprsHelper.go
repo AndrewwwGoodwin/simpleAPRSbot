@@ -3,6 +3,8 @@ package aprsHelper
 import (
 	"fmt"
 	"github.com/ebarkie/aprs"
+	"math/rand/v2"
+	"strconv"
 	"strings"
 )
 
@@ -110,7 +112,7 @@ func GenerateMessageReplyFrame(messageContent string, f aprs.Frame) aprs.Frame {
 		Dst: botToCall,
 		Src: botStation,
 		//Path: botPath,
-		Text: ":" + EnsureLength(personWhoMessagedMe) + ":" + messageContent,
+		Text: ":" + EnsureLength(personWhoMessagedMe) + ":" + messageContent + "{" + strconv.Itoa(rand.IntN(999)),
 	}
 	return messageFrame
 }

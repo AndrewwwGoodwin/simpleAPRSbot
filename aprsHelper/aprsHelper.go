@@ -140,7 +140,7 @@ func SendMessage(f aprs.Frame) {
 	if frameLength <= 67 {
 		err := f.SendIS("tcp://rotate.aprs.net:14580", 24233)
 		if err != nil {
-			fmt.Println("THERE WAS AN ERROR: " + err.Error())
+			fmt.Println("Failed to send message to APRSIS: " + err.Error())
 			return
 		}
 	} else {

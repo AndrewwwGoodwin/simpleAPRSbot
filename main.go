@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"github.com/ebarkie/aprs"
 	"log"
+	"os"
+	"os/signal"
 	"simpleAPRSbot-go/aprsHelper"
 	"simpleAPRSbot-go/commands/general"
 	"strings"
@@ -36,7 +38,14 @@ var aprsPass = flag.Int("APRS_PASS", 000000, "00000")
 var AprsFiAPIKey = flag.String("APRS_FI_API_KEY", "", "")
 
 func main() {
-
+	// waits for termination so everything shuts down nicely
+	go func() {
+		c := make(chan os.Signal, 1)
+		signal.Notify(c, os.Interrupt)
+		<-c
+		log.Println("Shutting down")
+		os.Exit(0)
+	}()
 	flag.Parse()
 	fmt.Println(aprsCALL, aprsPass)
 

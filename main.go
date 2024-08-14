@@ -13,6 +13,8 @@ import (
 
 type CommandFunc func(args []string, f aprs.Frame)
 
+type CommandFuncAPRSFi func(args []string, f aprs.Frame, aprsFiKey string)
+
 var commandRegistry = map[string]CommandFunc{
 	"ping":     general.Ping,
 	"p":        general.Ping,
@@ -24,9 +26,17 @@ var commandRegistry = map[string]CommandFunc{
 	"r":        general.Roll,
 }
 
+var commandRegistryAPRSFI = map[string]CommandFuncAPRSFi{
+	"loc":      general.Location,
+	"location": general.Location,
+}
+
+var aprsCALL = flag.String("APRS_CALL", "N0CALL-0", "N0CALL-0")
+var aprsPass = flag.Int("APRS_PASS", 000000, "00000")
+var AprsFiAPIKey = flag.String("APRS_FI_API_KEY", "", "")
+
 func main() {
-	var aprsCALL = flag.String("APRS_CALL", "N0CALL-0", "N0CALL-0")
-	var aprsPass = flag.Int("APRS_PASS", 000000, "00000")
+
 	flag.Parse()
 	fmt.Println(aprsCALL, aprsPass)
 
@@ -46,6 +56,8 @@ func main() {
 				if _, exists := commandRegistry[commandName]; exists {
 					// The command exists, you can execute it
 					handleCommand(commandName, commandArgs, f)
+				} else if _, exists := commandRegistryAPRSFI[commandName]; exists {
+					handleCommand(commandName, commandArgs, f)
 				} else {
 					fmt.Println("Unknown command:", commandName)
 				}
@@ -57,6 +69,8 @@ func main() {
 func handleCommand(commandName string, commandArgs []string, f aprs.Frame) {
 	if commandFunc, exists := commandRegistry[commandName]; exists {
 		commandFunc(commandArgs, f) // Call the corresponding function
+	} else if commandFuncAPRSFi, existsAprs := commandRegistryAPRSFI[strings.ToLower(commandName)]; existsAprs {
+		commandFuncAPRSFi(commandArgs, f, *AprsFiAPIKey)
 	} else {
 		fmt.Println("Unknown command:", commandName)
 	}

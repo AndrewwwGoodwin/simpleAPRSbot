@@ -65,25 +65,14 @@ func main() {
 				//strip the prefix
 				commandName := strings.ToLower(strings.Split(aprsHelper.ExtractCommand(f.Text), " ")[0])
 				commandArgs, _ := aprsHelper.ExtractArgs(aprsHelper.ExtractCommand(f.Text))
-				if _, exists := commandRegistry[commandName]; exists {
-					// The command exists, you can execute it
-					handleCommand(commandName, commandArgs, f)
-				} else if _, exists := commandRegistryAPRSFI[commandName]; exists {
-					handleCommand(commandName, commandArgs, f)
+				if commandFunc, exists := commandRegistry[commandName]; exists {
+					commandFunc(commandArgs, f) // Call the corresponding function
+				} else if commandFuncAPRSFi, existsAprs := commandRegistryAPRSFI[strings.ToLower(commandName)]; existsAprs {
+					commandFuncAPRSFi(commandArgs, f, *AprsFiAPIKey)
 				} else {
 					fmt.Println("Unknown command:", commandName)
 				}
 			}
 		}
-	}
-}
-
-func handleCommand(commandName string, commandArgs []string, f aprs.Frame) {
-	if commandFunc, exists := commandRegistry[commandName]; exists {
-		commandFunc(commandArgs, f) // Call the corresponding function
-	} else if commandFuncAPRSFi, existsAprs := commandRegistryAPRSFI[strings.ToLower(commandName)]; existsAprs {
-		commandFuncAPRSFi(commandArgs, f, *AprsFiAPIKey)
-	} else {
-		fmt.Println("Unknown command:", commandName)
 	}
 }

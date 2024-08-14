@@ -4,7 +4,7 @@ This is my first attempt at a simple APRS bot written in GoLang
 Expandable by simply adding a command file, and pointing to it via commandRegistry in main.go
 
 http://www.aprs.org/ <br>
-https://aprs.fi/
+https://aprs.fi/ <br>
 http://www.aprs.org/doc/APRS101.PDF
 
 Special shout out to the people @ https://github.com/ebarkie/aprs.

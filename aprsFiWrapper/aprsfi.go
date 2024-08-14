@@ -2,6 +2,7 @@ package aprsFiWrapper
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -32,6 +33,9 @@ func (wrapper AprsFiWrapper) GetLocation(callAndSSID string) (*AprsFiLocationStr
 	body, _ := io.ReadAll(resp.Body)
 	aprsfiLocation := AprsFiLocationStruct{}
 	_ = json.Unmarshal(body, &aprsfiLocation)
+	if aprsfiLocation.Result == "fail" {
+		return nil, errors.New("aprsfi api fail")
+	}
 	return &aprsfiLocation, nil
 }
 

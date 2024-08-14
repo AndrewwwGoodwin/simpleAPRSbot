@@ -56,12 +56,8 @@ func main() {
 		for f := range fc {
 			fmt.Println("")
 			fmt.Println(f)
-			// dont ack acks
-			if strings.HasPrefix(f.Text, ":"+aprsHelper.EnsureLength(*aprsCALL)+":ack") {
-				continue
-			}
-			aprsHelper.SendAck(f)
 			if strings.HasPrefix(f.Text, ":"+aprsHelper.EnsureLength(*aprsCALL)+":!") {
+				aprsHelper.SendAck(f)
 				//strip the prefix
 				commandName := strings.ToLower(strings.Split(aprsHelper.ExtractCommand(f.Text), " ")[0])
 				commandArgs, _ := aprsHelper.ExtractArgs(aprsHelper.ExtractCommand(f.Text))
@@ -71,6 +67,17 @@ func main() {
 					commandFuncAPRSFi(commandArgs, f, *AprsFiAPIKey)
 				} else {
 					fmt.Println("Unknown command:", commandName)
+				}
+			} else {
+				// dont ack acks
+				if strings.HasPrefix(f.Text, ":"+aprsHelper.EnsureLength(*aprsCALL)+":ack") {
+					continue
+					// dont ack messages not sent to us
+				} else if !strings.HasPrefix(f.Text, ":"+aprsHelper.EnsureLength(*aprsCALL)+":") {
+					continue
+				} else {
+					// if we make it through all that, finally ack the message
+					aprsHelper.SendAck(f)
 				}
 			}
 		}

@@ -47,7 +47,10 @@ func main() {
 		for f := range fc {
 			fmt.Println("")
 			fmt.Println(f)
-
+			// dont ack acks
+			if strings.HasPrefix(f.Text, ":"+aprsHelper.EnsureLength(*aprsCALL)+":ack") {
+				continue
+			}
 			aprsHelper.SendAck(f)
 			if strings.HasPrefix(f.Text, ":"+aprsHelper.EnsureLength(*aprsCALL)+":!") {
 				//strip the prefix

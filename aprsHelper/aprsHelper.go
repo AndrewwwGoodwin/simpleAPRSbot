@@ -6,6 +6,8 @@ import (
 	"math/rand/v2"
 	"strconv"
 	"strings"
+	"time"
+	"unicode/utf8"
 )
 
 func ExtractCommand(message string) string {
@@ -71,20 +73,16 @@ func SendAck(f aprs.Frame) {
 	botToCall := aprs.Addr{
 		Call: "APZ727",
 	}
-	//botPath := aprs.Path{
-	//	aprs.Addr{
-	//		Call: "TCPIP*",
-	//	},
-	//}
+	var messageText = "ack" + messageNum
 	// ack the message
 	ack := aprs.Frame{
 		Dst: botToCall,
 		Src: botStation,
 		//Path: botPath,
-		Text: ":" + EnsureLength(personWhoMessagedMe) + ":" + "ack" + messageNum,
+		Text: ":" + EnsureLength(personWhoMessagedMe) + ":" + messageText,
 	}
 	fmt.Println(ack)
-	SendMessage(ack)
+	sendMessageFrame(ack)
 }
 
 func EnsureLength(input string) string {
@@ -135,23 +133,53 @@ func ExtractAuthor(frame string) (string, error) {
 	return author, nil
 }
 
-func SendMessage(f aprs.Frame) {
-	frameLength := len(f.Text) - 11
-
-	// max message length is 67 characters, so if its longer we need to split
-	if frameLength <= 67 {
-		err := f.SendIS("tcp://rotate.aprs.net:14580", 24233)
-		if err != nil {
-			fmt.Println("Failed to send message to APRSIS: " + err.Error())
-			return
-		}
-	} else {
-		// split the frame text into several packets and send each of them
-		AprsTextReply("Reply message too long.", f)
+func sendMessageFrame(f aprs.Frame) {
+	err := f.SendIS("tcp://rotate.aprs.net:14580", 24233)
+	if err != nil {
+		fmt.Println("Failed to send message to APRSIS: " + err.Error())
+		return
 	}
 }
 
 func AprsTextReply(text string, f aprs.Frame) {
-	SendMessage(GenerateMessageReplyFrame(text, f))
-	return
+	if len(text) <= 67 {
+		sendMessageFrame(GenerateMessageReplyFrame(text, f))
+	} else {
+		// split the frame text into several packets and send each of them
+		var messages = splitStringByLength(text, 66)
+		fmt.Println("message split")
+		fmt.Println(messages)
+		for _, message := range messages {
+			//fmt.Println("sending message", i, message)
+			sendMessageFrame(GenerateMessageReplyFrame(message, f))
+			time.Sleep(3 * time.Second)
+		}
+		return
+	}
+}
+
+func splitStringByLength(s string, maxLength int) []string {
+	var result []string
+	for len(s) > 0 {
+		if len(s) <= maxLength {
+			result = append(result, s)
+			break
+		}
+
+		// Try to find the last space within the maxLength boundary
+		cutIndex := strings.LastIndex(s[:maxLength], " ")
+		if cutIndex == -1 {
+			// No space found, fall back to cutting at maxLength
+			cutIndex = maxLength
+			// Ensure we're not cutting a multibyte character
+			for !utf8.ValidString(s[:cutIndex]) {
+				cutIndex--
+			}
+		}
+
+		// Append the section and trim the string
+		result = append(result, s[:cutIndex])
+		s = strings.TrimSpace(s[cutIndex:])
+	}
+	return result
 }

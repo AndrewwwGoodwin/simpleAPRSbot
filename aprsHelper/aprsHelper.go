@@ -114,6 +114,7 @@ func GenerateMessageReplyFrame(messageContent string, f aprs.Frame) aprs.Frame {
 		//Path: botPath,
 		Text: ":" + EnsureLength(personWhoMessagedMe) + ":" + messageContent + "{" + strconv.Itoa(rand.IntN(999)),
 	}
+	fmt.Println(messageFrame.String())
 	return messageFrame
 }
 

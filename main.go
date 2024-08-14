@@ -10,6 +10,7 @@ import (
 	"os/signal"
 	"simpleAPRSbot-go/aprsHelper"
 	"simpleAPRSbot-go/commands/general"
+	"simpleAPRSbot-go/commands/location"
 	"strings"
 )
 
@@ -29,8 +30,8 @@ var commandRegistry = map[string]CommandFunc{
 }
 
 var commandRegistryAPRSFI = map[string]CommandFuncAPRSFi{
-	"loc":      general.Location,
-	"location": general.Location,
+	"loc":      location.Location,
+	"location": location.Location,
 }
 
 var aprsCALL = flag.String("APRS_CALL", "N0CALL-0", "N0CALL-0")

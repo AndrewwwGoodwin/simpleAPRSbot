@@ -2,6 +2,7 @@ package aprsFiWrapper
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 )
@@ -16,10 +17,10 @@ func NewAprsFiWrapper(apiKey string) *AprsFiWrapper {
 	return &AprsFiWrapper{apiKey: apiKey}
 }
 
-func (wrapper AprsFiWrapper) GetLocation(callAndSSID string) *AprsFiLocationStruct {
+func (wrapper AprsFiWrapper) GetLocation(callAndSSID string) (*AprsFiLocationStruct, error) {
 	resp, err := http.Get(endpoint + "/get?name=" + callAndSSID + "&apikey=" + wrapper.apiKey + "&format=json&what=loc")
 	if err != nil {
-		return nil
+		return nil, fmt.Errorf("failed to connect to aprsfi: %v", err)
 	}
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
@@ -31,7 +32,7 @@ func (wrapper AprsFiWrapper) GetLocation(callAndSSID string) *AprsFiLocationStru
 	body, _ := io.ReadAll(resp.Body)
 	aprsfiLocation := AprsFiLocationStruct{}
 	_ = json.Unmarshal(body, &aprsfiLocation)
-	return &aprsfiLocation
+	return &aprsfiLocation, nil
 }
 
 type AprsFiLocationStruct struct {

@@ -43,7 +43,7 @@ func main() {
 	log.Println("Receiving")
 	for {
 		ctx := context.Background()
-		fc := aprs.RecvIS(ctx, "rotate.aprs.net:14580", aprs.Addr{Call: *aprsCALL}, *aprsPass, "e/"+*aprsCALL)
+		fc := aprs.RecvIS(ctx, "rotate.aprs.net:14580", aprs.Addr{Call: *aprsCALL}, *aprsPass, "g/"+*aprsCALL)
 		for f := range fc {
 			fmt.Println("")
 			fmt.Println(f)

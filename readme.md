@@ -5,6 +5,7 @@ Expandable by simply adding a command file, and pointing to it via commandRegist
 
 http://www.aprs.org/ <br>
 https://aprs.fi/
+http://www.aprs.org/doc/APRS101.PDF
 
 Special shout out to the people @ https://github.com/ebarkie/aprs.
 

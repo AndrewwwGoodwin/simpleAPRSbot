@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"simpleAPRSbot-go/api"
 	"simpleAPRSbot-go/aprsHelper"
 	"simpleAPRSbot-go/commands/general"
 	"simpleAPRSbot-go/commands/location"
@@ -16,7 +17,7 @@ import (
 
 type CommandFunc func(args []string, f aprs.Frame)
 
-type CommandFuncAPRSFi func(args []string, f aprs.Frame, aprsFiKey string)
+type CommandFuncAPIKeys func(args []string, f aprs.Frame, aprsFiKey api.Keys)
 
 var commandRegistry = map[string]CommandFunc{
 	"ping":     general.Ping,
@@ -32,14 +33,15 @@ var commandRegistry = map[string]CommandFunc{
 	"eval":     general.CalculateCommand,
 }
 
-var commandRegistryAPRSFI = map[string]CommandFuncAPRSFi{
+var commandRegistryAPRSFI = map[string]CommandFuncAPIKeys{
 	"loc":      location.Location,
 	"location": location.Location,
+	"w":        location.Weather,
+	"weather":  location.Weather,
 }
 
 var aprsCALL = flag.String("APRS_CALL", "N0CALL-0", "N0CALL-0")
 var aprsPass = flag.Int("APRS_PASS", 000000, "00000")
-var AprsFiAPIKey = flag.String("APRS_FI_API_KEY", "", "")
 
 func main() {
 	// waits for termination so everything shuts down nicely
@@ -50,8 +52,15 @@ func main() {
 		log.Println("Shutting down")
 		os.Exit(0)
 	}()
+	// load up our flags
+	APRSFIkey := flag.String("APRS_FI_API_KEY", "", "APRS FI API Key")
+	OpenWeatherMapkey := flag.String("OWM_FI_API_KEY", "", "OpenWeatherMap API Key")
 	flag.Parse()
-	fmt.Println(aprsCALL, aprsPass)
+
+	//shove them in an object we can ship around the program
+	var APIKeyObj api.Keys
+	APIKeyObj.APRSFIkey = *APRSFIkey
+	APIKeyObj.OpenWeatherMapkey = *OpenWeatherMapkey
 
 	log.Println("Receiving")
 	for {
@@ -68,7 +77,7 @@ func main() {
 				if commandFunc, exists := commandRegistry[commandName]; exists {
 					commandFunc(commandArgs, f) // Call the corresponding function
 				} else if commandFuncAPRSFi, existsAprs := commandRegistryAPRSFI[strings.ToLower(commandName)]; existsAprs {
-					commandFuncAPRSFi(commandArgs, f, *AprsFiAPIKey)
+					commandFuncAPRSFi(commandArgs, f, APIKeyObj)
 				} else {
 					fmt.Println("Unknown command:", commandName)
 				}

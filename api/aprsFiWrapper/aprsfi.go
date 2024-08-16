@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"simpleAPRSbot-go/api"
 )
 
 var endpoint string = "https://api.aprs.fi/api"
@@ -14,8 +15,8 @@ type AprsFiWrapper struct {
 	apiKey string
 }
 
-func NewAprsFiWrapper(apiKey string) *AprsFiWrapper {
-	return &AprsFiWrapper{apiKey: apiKey}
+func NewAprsFiWrapper(apiKey api.Keys) *AprsFiWrapper {
+	return &AprsFiWrapper{apiKey: apiKey.APRSFIkey}
 }
 
 func (wrapper AprsFiWrapper) GetLocation(callAndSSID string) (*AprsFiLocationStruct, error) {

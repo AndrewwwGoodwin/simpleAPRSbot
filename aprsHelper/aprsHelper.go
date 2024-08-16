@@ -65,7 +65,7 @@ func extractMessageNumber(message string) (string, error) {
 
 func SendAck(f aprs.Frame) {
 	messageNum, _ := extractMessageNumber(f.Text)
-	personWhoMessagedMe, _ := ExtractAuthor(f.String())
+	personWhoMessagedMe := ExtractAuthor(f)
 	botStation := aprs.Addr{
 		Call: "KQ4NRT",
 		SSID: 6,
@@ -98,7 +98,7 @@ func spaces(n int) string {
 }
 
 func GenerateMessageReplyFrame(messageContent string, f aprs.Frame) aprs.Frame {
-	personWhoMessagedMe, _ := ExtractAuthor(f.String())
+	personWhoMessagedMe := ExtractAuthor(f)
 	botStation := aprs.Addr{
 		Call: "KQ4NRT",
 		SSID: 6,
@@ -116,22 +116,9 @@ func GenerateMessageReplyFrame(messageContent string, f aprs.Frame) aprs.Frame {
 	return messageFrame
 }
 
-func ExtractAuthor(frame string) (string, error) {
-	// Find the position of the '>' symbol that separates the author from the destination
-	greaterThanIndex := strings.Index(frame, ">")
-	if greaterThanIndex == -1 {
-		return "", fmt.Errorf("no '>' found in the frame")
-	}
-
-	// Extract the author, which is everything before the '>'
-	author := frame[:greaterThanIndex]
-
-	// Ensure that there is an author
-	if len(author) == 0 {
-		return "", fmt.Errorf("no author found before '>'")
-	}
-
-	return author, nil
+func ExtractAuthor(frame aprs.Frame) string {
+	var author = frame.Src.Call + "-" + strconv.Itoa(frame.Src.SSID)
+	return author
 }
 
 func sendMessageFrame(f aprs.Frame) {

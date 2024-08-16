@@ -3,18 +3,19 @@ package location
 import (
 	"fmt"
 	"github.com/ebarkie/aprs"
-	"simpleAPRSbot-go/aprsFiWrapper"
+	"simpleAPRSbot-go/api"
+	"simpleAPRSbot-go/api/aprsFiWrapper"
 	"simpleAPRSbot-go/aprsHelper"
 )
 
-func Location(args []string, f aprs.Frame, apiKey string) {
+func Location(args []string, f aprs.Frame, apiKey api.Keys) {
 	// this command gets the user's last seen location, and returns their current zip code.
 	// step 1: get the user's last location
 
 	var callerCallsign string
 	switch len(args) {
 	case 0:
-		callerCallsign, _ = aprsHelper.ExtractAuthor(f.String())
+		callerCallsign = aprsHelper.ExtractAuthor(f)
 	case 1:
 		callerCallsign = args[0]
 	default:

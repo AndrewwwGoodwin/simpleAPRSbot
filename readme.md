@@ -5,7 +5,9 @@ Expandable by simply adding a command file, and pointing to it via commandRegist
 
 http://www.aprs.org/ <br>
 https://aprs.fi/ <br>
-http://www.aprs.org/doc/APRS101.PDF
+http://www.aprs.org/doc/APRS101.PDF <br>
+
+Weather Info from: https://openweathermap.org/
 
 Special shout out to the people @ https://github.com/ebarkie/aprs.
 

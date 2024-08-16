@@ -27,7 +27,6 @@ var commandRegistry = map[string]CommandFunc{
 	"coinflip": general.Flip,
 	"roll":     general.Roll,
 	"r":        general.Roll,
-	"test":     general.TestCommand,
 	"cw":       general.CW,
 	"calc":     general.CalculateCommand,
 	"eval":     general.CalculateCommand,

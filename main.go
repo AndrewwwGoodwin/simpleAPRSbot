@@ -29,6 +29,8 @@ var commandRegistry = map[string]CommandFunc{
 	"r":        general.Roll,
 	"test":     general.TestCommand,
 	"cw":       general.CW,
+	"calc":     general.CalculateCommand,
+	"eval":     general.CalculateCommand,
 }
 
 var commandRegistryAPRSFI = map[string]CommandFuncAPRSFi{

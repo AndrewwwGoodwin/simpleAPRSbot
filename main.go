@@ -54,15 +54,15 @@ func main() {
 	}()
 	// load up our flags
 	APRSFIkey := flag.String("APRS_FI_API_KEY", "", "APRS FI API Key")
-	OpenWeatherMapkey := flag.String("OWM_FI_API_KEY", "", "OpenWeatherMap API Key")
+	OpenWeatherMapKey := flag.String("OWM_FI_API_KEY", "", "OpenWeatherMap API Key")
 	flag.Parse()
 
 	//shove them in an object we can ship around the program
 	var APIKeyObj api.Keys
 	APIKeyObj.APRSFIkey = *APRSFIkey
-	APIKeyObj.OpenWeatherMapkey = *OpenWeatherMapkey
+	APIKeyObj.OpenWeatherMapkey = *OpenWeatherMapKey
 
-	// we also need to create an instance of APRSUserClient so we can reply to messages
+	// we also need to create an instance of APRSUserClient, so we can reply to messages
 	var client = aprsHelper.InitAPRSClient(*aprsCALL, *aprsPass)
 
 	log.Println("Receiving")

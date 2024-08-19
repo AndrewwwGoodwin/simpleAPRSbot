@@ -11,9 +11,10 @@ import (
 )
 
 type APRSUserClient struct {
-	callSign string
-	ssid     int
-	password int
+	callSign     string
+	ssid         int
+	password     int
+	messageQueue MessageQueue
 }
 
 func ExtractCommand(message string) string {
@@ -147,12 +148,17 @@ func extractSSIDFromCallSSID(input string) (string, int) {
 
 func InitAPRSClient(callandSSID string, APRSPassword int) APRSUserClient {
 	var call, ssid = extractSSIDFromCallSSID(callandSSID)
-	return APRSUserClient{callSign: call, ssid: ssid, password: APRSPassword}
+	var messageQueue = NewMessageQueue()
+	return APRSUserClient{callSign: call, ssid: ssid, password: APRSPassword, messageQueue: *messageQueue}
 }
 
 func (client APRSUserClient) AprsTextReply(text string, f aprs.Frame) {
 	if len(text) <= 67 {
-		sendMessageFrame(client.GenerateMessageReplyFrame(text, f))
+		// instead of directly sending the messages, lets have a queueing system that the messages get added to.
+		// in this queue, we can listen for acks and all. We can also then monitor the queue to see how many messages we
+		// process, as well as rate-limit ourselves.
+		client.messageQueue.Push(client.GenerateMessageReplyFrame(text, f))
+		//sendMessageFrame(client.GenerateMessageReplyFrame(text, f))
 	} else {
 		// split the frame text into several packets and send each of them
 		var messages = splitStringByLength(text, 66)

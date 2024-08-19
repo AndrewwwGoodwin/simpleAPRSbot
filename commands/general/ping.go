@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func Ping(args []string, f aprs.Frame, client aprsHelper.APRSUserClient) {
+func Ping(args []string, f aprs.Frame, client *aprsHelper.APRSUserClient) {
 	replyText := "Pong!"
 	if len(args) != 0 {
 		replyText = strings.Join(args, " ")

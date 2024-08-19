@@ -6,14 +6,14 @@ import (
 	"math/rand/v2"
 	"strconv"
 	"strings"
-	"time"
 	"unicode/utf8"
 )
 
 type APRSUserClient struct {
-	callSign string
-	ssid     int
-	password int
+	callSign     string
+	ssid         int
+	password     int
+	MessageQueue *MessageQueue
 }
 
 func ExtractCommand(message string) string {
@@ -88,7 +88,7 @@ func (client APRSUserClient) SendAck(f aprs.Frame) {
 		Text: ":" + EnsureLength(personWhoMessagedMe) + ":" + messageText,
 	}
 	fmt.Println(ack)
-	sendMessageFrame(ack)
+	client.MessageQueue.Push(ack)
 }
 
 func EnsureLength(input string) string {
@@ -127,7 +127,7 @@ func ExtractAuthor(frame aprs.Frame) string {
 	return author
 }
 
-func sendMessageFrame(f aprs.Frame) {
+func SendMessageFrame(f aprs.Frame) {
 	err := f.SendIS("tcp://rotate.aprs.net:14580", 24233)
 	if err != nil {
 		fmt.Println("Failed to send message to APRSIS: " + err.Error())
@@ -145,23 +145,31 @@ func extractSSIDFromCallSSID(input string) (string, int) {
 	return callSign, ssid
 }
 
-func InitAPRSClient(callandSSID string, APRSPassword int) APRSUserClient {
+func InitAPRSClient(callandSSID string, APRSPassword int) *APRSUserClient {
 	var call, ssid = extractSSIDFromCallSSID(callandSSID)
-	return APRSUserClient{callSign: call, ssid: ssid, password: APRSPassword}
+	var messageQueue = NewMessageQueue()
+	return &APRSUserClient{callSign: call, ssid: ssid, password: APRSPassword, MessageQueue: messageQueue}
 }
 
 func (client APRSUserClient) AprsTextReply(text string, f aprs.Frame) {
 	if len(text) <= 67 {
-		sendMessageFrame(client.GenerateMessageReplyFrame(text, f))
+		// instead of directly sending the messages, lets have a queueing system that the messages get added to.
+		// in this Queue, we can listen for acks and all. We can also then monitor the Queue to see how many messages we
+		// process, as well as rate-limit ourselves.
+		client.MessageQueue.Push(client.GenerateMessageReplyFrame(text, f))
+		//SendMessageFrame(client.GenerateMessageReplyFrame(text, f))
 	} else {
 		// split the frame text into several packets and send each of them
 		var messages = splitStringByLength(text, 66)
 		fmt.Println("message split")
 		fmt.Println(messages)
+		var packets = make([]aprs.Frame, len(messages))
 		for _, message := range messages {
 			//fmt.Println("sending message", i, message)
-			sendMessageFrame(client.GenerateMessageReplyFrame(message, f))
-			time.Sleep(3 * time.Second)
+			packets = append(packets, client.GenerateMessageReplyFrame(message, f))
+		}
+		for _, packet := range packets {
+			client.MessageQueue.Push(packet)
 		}
 		return
 	}

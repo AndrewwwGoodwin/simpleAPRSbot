@@ -8,7 +8,7 @@ import (
 	"simpleAPRSbot-go/helpers/aprsHelper"
 )
 
-func Location(args []string, f aprs.Frame, apiKey api.Keys, client aprsHelper.APRSUserClient) {
+func Location(args []string, f aprs.Frame, apiKey api.Keys, client *aprsHelper.APRSUserClient) {
 	// this command gets the user's last seen location, and returns their current zip code.
 	// step 1: get the user's last location
 

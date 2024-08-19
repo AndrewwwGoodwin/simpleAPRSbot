@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func Roll(args []string, f aprs.Frame, client aprsHelper.APRSUserClient) {
+func Roll(args []string, f aprs.Frame, client *aprsHelper.APRSUserClient) {
 	// take in 1 arg that would allow for setting max roll
 	// otherwise default to rolling out of 100
 	var maxRoll = 100

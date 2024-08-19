@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func CW(args []string, f aprs.Frame, client aprsHelper.APRSUserClient) {
+func CW(args []string, f aprs.Frame, client *aprsHelper.APRSUserClient) {
 	var toEncode = strings.Join(args, " ")
 	// use regex to ensure that the input string can be converted to morse
 	var isValid = regexp.MustCompile(`^[a-zA-Z0-9 .,?'!/()]+$`).MatchString(toEncode)

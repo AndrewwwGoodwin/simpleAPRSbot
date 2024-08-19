@@ -6,7 +6,7 @@ import (
 	"simpleAPRSbot-go/helpers/aprsHelper"
 )
 
-func Flip(args []string, f aprs.Frame, client aprsHelper.APRSUserClient) {
+func Flip(args []string, f aprs.Frame, client *aprsHelper.APRSUserClient) {
 	// heads or tails
 	var options = [2]string{"Heads", "Tails"}
 	var decideInt = rand.IntN(1000)

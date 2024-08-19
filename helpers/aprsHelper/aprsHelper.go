@@ -149,7 +149,7 @@ func extractSSIDFromCallSSID(input string) (string, int) {
 func InitAPRSClient(callandSSID string, APRSPassword int) APRSUserClient {
 	var call, ssid = extractSSIDFromCallSSID(callandSSID)
 	var messageQueue = NewMessageQueue()
-	return APRSUserClient{callSign: call, ssid: ssid, password: APRSPassword, messageQueue: *messageQueue}
+	return APRSUserClient{callSign: call, ssid: ssid, password: APRSPassword, messageQueue: messageQueue}
 }
 
 func (client APRSUserClient) AprsTextReply(text string, f aprs.Frame) {

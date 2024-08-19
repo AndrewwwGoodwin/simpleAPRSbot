@@ -69,10 +69,11 @@ func main() {
 	go func() {
 		//queue processes
 		for {
-			if len(client.MessageQueue.Queue) < 0 {
+			if len(client.MessageQueue.Queue) <= 0 {
 				continue
 			} else {
 				aprsHelper.SendMessageFrame(client.MessageQueue.Pop())
+				// this globally lets us only send a message every 3 secs. can be turned up or down based on load
 				time.Sleep(3 * time.Second)
 			}
 		}

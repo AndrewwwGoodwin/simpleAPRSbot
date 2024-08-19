@@ -73,8 +73,8 @@ func main() {
 				continue
 			} else {
 				aprsHelper.SendMessageFrame(client.MessageQueue.Pop())
-				// this globally lets us only send a message every 3 secs. can be turned up or down based on load
-				time.Sleep(3 * time.Second)
+				// this globally lets us only send a message every x secs. can be turned up or down based on load
+				time.Sleep(1 * time.Second)
 			}
 		}
 	}()

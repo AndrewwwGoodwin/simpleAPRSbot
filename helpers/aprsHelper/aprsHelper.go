@@ -88,7 +88,7 @@ func (client APRSUserClient) SendAck(f aprs.Frame) {
 		Text: ":" + EnsureLength(personWhoMessagedMe) + ":" + messageText,
 	}
 	fmt.Println(ack)
-	SendMessageFrame(ack)
+	client.MessageQueue.Push(ack)
 }
 
 func EnsureLength(input string) string {

@@ -13,6 +13,7 @@ import (
 	"simpleAPRSbot-go/helpers/api"
 	"simpleAPRSbot-go/helpers/aprsHelper"
 	"strings"
+	"time"
 )
 
 type CommandFunc func(args []string, f aprs.Frame, client *aprsHelper.APRSUserClient)
@@ -64,6 +65,18 @@ func main() {
 
 	// we also need to create an instance of APRSUserClient, so we can reply to messages
 	var client = aprsHelper.InitAPRSClient(*aprsCALL, *aprsPass)
+
+	go func() {
+		//queue processes
+		for {
+			if len(client.MessageQueue.Queue) < 0 {
+				continue
+			} else {
+				aprsHelper.SendMessageFrame(client.MessageQueue.Pop())
+				time.Sleep(3 * time.Second)
+			}
+		}
+	}()
 
 	log.Println("Receiving")
 	for {

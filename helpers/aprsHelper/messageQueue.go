@@ -5,12 +5,12 @@ import (
 )
 
 type Message struct {
-	Message                 aprs.Frame
+	Message                 *aprs.Frame
 	ReceivedAcknowledgement bool
 }
 
 type MessageQueue struct {
-	queue []Message
+	Queue []Message
 }
 
 func NewMessageQueue() *MessageQueue {
@@ -20,18 +20,18 @@ func NewMessageQueue() *MessageQueue {
 
 func (mq *MessageQueue) Push(f aprs.Frame) {
 	var m = Message{
-		Message:                 f,
+		Message:                 &f,
 		ReceivedAcknowledgement: false,
 	}
-	mq.queue = append(mq.queue, m)
+	mq.Queue = append(mq.Queue, m)
 }
 
 func (mq *MessageQueue) Pop() aprs.Frame {
-	if len(mq.queue) == 0 {
+	if len(mq.Queue) == 0 {
 		return aprs.Frame{}
 	} else {
-		f := mq.queue[0].Message
-		mq.queue = mq.queue[1:]
-		return f
+		f := mq.Queue[0].Message
+		mq.Queue = mq.Queue[1:]
+		return *f
 	}
 }

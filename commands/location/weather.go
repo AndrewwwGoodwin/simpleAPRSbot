@@ -2,10 +2,10 @@ package location
 
 import (
 	"github.com/ebarkie/aprs"
-	"simpleAPRSbot-go/api"
-	"simpleAPRSbot-go/api/OpenWeatherMapWrapper"
-	"simpleAPRSbot-go/api/aprsFiWrapper"
-	"simpleAPRSbot-go/aprsHelper"
+	"simpleAPRSbot-go/helpers/api"
+	"simpleAPRSbot-go/helpers/api/OpenWeatherMapWrapper"
+	"simpleAPRSbot-go/helpers/api/aprsFiWrapper"
+	"simpleAPRSbot-go/helpers/aprsHelper"
 	"strconv"
 )
 

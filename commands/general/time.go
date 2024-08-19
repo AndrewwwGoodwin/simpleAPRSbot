@@ -3,7 +3,7 @@ package general
 import (
 	"fmt"
 	"github.com/ebarkie/aprs"
-	"simpleAPRSbot-go/aprsHelper"
+	"simpleAPRSbot-go/helpers/aprsHelper"
 	"strings"
 	"time"
 )

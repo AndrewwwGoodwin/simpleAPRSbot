@@ -5,7 +5,7 @@ import (
 	"errors"
 	"io"
 	"net/http"
-	"simpleAPRSbot-go/api"
+	"simpleAPRSbot-go/helpers/api"
 )
 
 type OpenWeatherMapWrapper struct {

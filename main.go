@@ -8,10 +8,10 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"simpleAPRSbot-go/api"
-	"simpleAPRSbot-go/aprsHelper"
 	"simpleAPRSbot-go/commands/general"
 	"simpleAPRSbot-go/commands/location"
+	"simpleAPRSbot-go/helpers/api"
+	"simpleAPRSbot-go/helpers/aprsHelper"
 	"strings"
 )
 

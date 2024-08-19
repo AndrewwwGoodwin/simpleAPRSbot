@@ -3,7 +3,7 @@ package general
 import (
 	"github.com/ebarkie/aprs"
 	"math/rand/v2"
-	"simpleAPRSbot-go/aprsHelper"
+	"simpleAPRSbot-go/helpers/aprsHelper"
 )
 
 func Flip(args []string, f aprs.Frame) {

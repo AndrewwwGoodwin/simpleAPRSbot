@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"simpleAPRSbot-go/api"
+	"simpleAPRSbot-go/helpers/api"
 )
 
 var endpoint string = "https://api.aprs.fi/api"

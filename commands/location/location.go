@@ -3,9 +3,9 @@ package location
 import (
 	"fmt"
 	"github.com/ebarkie/aprs"
-	"simpleAPRSbot-go/api"
-	"simpleAPRSbot-go/api/aprsFiWrapper"
-	"simpleAPRSbot-go/aprsHelper"
+	"simpleAPRSbot-go/helpers/api"
+	"simpleAPRSbot-go/helpers/api/aprsFiWrapper"
+	"simpleAPRSbot-go/helpers/aprsHelper"
 )
 
 func Location(args []string, f aprs.Frame, apiKey api.Keys) {

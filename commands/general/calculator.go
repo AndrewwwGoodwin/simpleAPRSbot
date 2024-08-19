@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/ebarkie/aprs"
 	"math"
-	"simpleAPRSbot-go/aprsHelper"
+	"simpleAPRSbot-go/helpers/aprsHelper"
 	"strconv"
 	"strings"
 	"unicode"

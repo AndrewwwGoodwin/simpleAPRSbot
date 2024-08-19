@@ -69,12 +69,12 @@ func extractMessageNumber(message string) (string, error) {
 	return messageNumber, nil
 }
 
-func SendAck(f aprs.Frame) {
+func (client APRSUserClient) SendAck(f aprs.Frame) {
 	messageNum, _ := extractMessageNumber(f.Text)
 	personWhoMessagedMe := ExtractAuthor(f)
 	botStation := aprs.Addr{
-		Call: "KQ4NRT",
-		SSID: 6,
+		Call: client.callSign,
+		SSID: client.ssid,
 	}
 	botToCall := aprs.Addr{
 		Call: "APZ727",

@@ -73,7 +73,7 @@ func main() {
 			fmt.Println("")
 			fmt.Println(f)
 			if strings.HasPrefix(f.Text, ":"+aprsHelper.EnsureLength(*aprsCALL)+":!") {
-				aprsHelper.SendAck(f)
+				client.SendAck(f)
 				//strip the prefix
 				commandName := strings.ToLower(strings.Split(aprsHelper.ExtractCommand(f.Text), " ")[0])
 				commandArgs, _ := aprsHelper.ExtractArgs(aprsHelper.ExtractCommand(f.Text))
@@ -93,7 +93,7 @@ func main() {
 					continue
 				} else {
 					// if we make it through all that, finally ack the message
-					aprsHelper.SendAck(f)
+					client.SendAck(f)
 				}
 			}
 		}

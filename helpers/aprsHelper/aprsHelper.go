@@ -14,7 +14,7 @@ type APRSUserClient struct {
 	callSign     string
 	ssid         int
 	password     int
-	messageQueue MessageQueue
+	messageQueue *MessageQueue
 }
 
 func ExtractCommand(message string) string {
@@ -146,10 +146,10 @@ func extractSSIDFromCallSSID(input string) (string, int) {
 	return callSign, ssid
 }
 
-func InitAPRSClient(callandSSID string, APRSPassword int) APRSUserClient {
+func InitAPRSClient(callandSSID string, APRSPassword int) *APRSUserClient {
 	var call, ssid = extractSSIDFromCallSSID(callandSSID)
 	var messageQueue = NewMessageQueue()
-	return APRSUserClient{callSign: call, ssid: ssid, password: APRSPassword, messageQueue: messageQueue}
+	return &APRSUserClient{callSign: call, ssid: ssid, password: APRSPassword, messageQueue: messageQueue}
 }
 
 func (client APRSUserClient) AprsTextReply(text string, f aprs.Frame) {

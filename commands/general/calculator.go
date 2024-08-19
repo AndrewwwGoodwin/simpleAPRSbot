@@ -10,7 +10,7 @@ import (
 	"unicode"
 )
 
-func CalculateCommand(args []string, f aprs.Frame, client aprsHelper.APRSUserClient) {
+func CalculateCommand(args []string, f aprs.Frame, client *aprsHelper.APRSUserClient) {
 	// this is a calculator. takes in a string, and returns an answer
 	var input = strings.Join(args, " ")
 	calculate, err := Calculate(input)

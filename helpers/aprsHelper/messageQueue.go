@@ -1,7 +1,6 @@
 package aprsHelper
 
 import (
-	"fmt"
 	"github.com/ebarkie/aprs"
 )
 
@@ -14,22 +13,20 @@ type MessageQueue struct {
 	queue []Message
 }
 
-func NewMessageQueue() MessageQueue {
+func NewMessageQueue() *MessageQueue {
 	var newQueue = MessageQueue{make([]Message, 0)}
-	return newQueue
+	return &newQueue
 }
 
-func (mq MessageQueue) Push(f aprs.Frame) {
+func (mq *MessageQueue) Push(f aprs.Frame) {
 	var m = Message{
 		Message:                 f,
 		ReceivedAcknowledgement: false,
 	}
-	fmt.Println(mq.queue, m)
 	mq.queue = append(mq.queue, m)
-	fmt.Println(mq.queue)
 }
 
-func (mq MessageQueue) Pop() aprs.Frame {
+func (mq *MessageQueue) Pop() aprs.Frame {
 	if len(mq.queue) == 0 {
 		return aprs.Frame{}
 	} else {

@@ -21,7 +21,7 @@ var timezoneAbbrs = map[string]string{
 	"PDT": "America/Los_Angeles",
 }
 
-func Time(args []string, f aprs.Frame, client aprsHelper.APRSUserClient) {
+func Time(args []string, f aprs.Frame, client *aprsHelper.APRSUserClient) {
 	// Default timezone to UTC
 	location := "UTC"
 

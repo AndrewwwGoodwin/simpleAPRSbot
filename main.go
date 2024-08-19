@@ -15,9 +15,9 @@ import (
 	"strings"
 )
 
-type CommandFunc func(args []string, f aprs.Frame, client aprsHelper.APRSUserClient)
+type CommandFunc func(args []string, f aprs.Frame, client *aprsHelper.APRSUserClient)
 
-type CommandFuncAPIKeys func(args []string, f aprs.Frame, aprsFiKey api.Keys, client aprsHelper.APRSUserClient)
+type CommandFuncAPIKeys func(args []string, f aprs.Frame, aprsFiKey api.Keys, client *aprsHelper.APRSUserClient)
 
 var commandRegistry = map[string]CommandFunc{
 	"ping":     general.Ping,

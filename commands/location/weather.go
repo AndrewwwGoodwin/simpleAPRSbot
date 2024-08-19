@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-func Weather(args []string, f aprs.Frame, apiKey api.Keys, client aprsHelper.APRSUserClient) {
+func Weather(args []string, f aprs.Frame, apiKey api.Keys, client *aprsHelper.APRSUserClient) {
 	if len(args) < 0 {
 		// the user specified something! let's see what it was!
 		client.AprsTextReply("Not yet implemented!", f)

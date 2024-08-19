@@ -66,20 +66,29 @@ func main() {
 	// we also need to create an instance of APRSUserClient, so we can reply to messages
 	var client = aprsHelper.InitAPRSClient(*aprsCALL, *aprsPass)
 
-	go func() {
-		//queue processes
-		for {
-			if len(client.MessageQueue.Queue) <= 0 {
-				continue
-			} else {
-				aprsHelper.SendMessageFrame(client.MessageQueue.Pop())
-				// this globally lets us only send a message every x secs. can be turned up or down based on load
-				time.Sleep(1 * time.Second)
-			}
-		}
-	}()
+	// crank up the queue processor
+	go queueProcessor(client)
 
+	// and start listening for commands
+	go commandListener(client, APIKeyObj)
 	log.Println("Receiving")
+
+	select {}
+}
+
+func queueProcessor(client *aprsHelper.APRSUserClient) {
+	for {
+		if len(client.MessageQueue.Queue) <= 0 {
+			continue
+		} else {
+			aprsHelper.SendMessageFrame(client.MessageQueue.Pop())
+			// this globally lets us only send a message every x secs. can be turned up or down based on load
+			time.Sleep(1 * time.Second)
+		}
+	}
+}
+
+func commandListener(client *aprsHelper.APRSUserClient, apiKeyObj api.Keys) {
 	for {
 		ctx := context.Background()
 		fc := aprs.RecvIS(ctx, "rotate.aprs.net:14580", aprs.Addr{Call: *aprsCALL}, *aprsPass, "g/"+*aprsCALL)
@@ -94,7 +103,7 @@ func main() {
 				if commandFunc, exists := commandRegistry[commandName]; exists {
 					commandFunc(commandArgs, f, client) // Call the corresponding function
 				} else if commandFuncAPRSFi, existsAprs := commandRegistryAPRSFI[strings.ToLower(commandName)]; existsAprs {
-					commandFuncAPRSFi(commandArgs, f, APIKeyObj, client)
+					commandFuncAPRSFi(commandArgs, f, apiKeyObj, client)
 				} else {
 					fmt.Println("Unknown command:", commandName)
 				}

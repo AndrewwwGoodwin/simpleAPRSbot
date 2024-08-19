@@ -21,7 +21,7 @@ var timezoneAbbrs = map[string]string{
 	"PDT": "America/Los_Angeles",
 }
 
-func Time(args []string, f aprs.Frame) {
+func Time(args []string, f aprs.Frame, client aprsHelper.APRSUserClient) {
 	// Default timezone to UTC
 	location := "UTC"
 
@@ -32,7 +32,7 @@ func Time(args []string, f aprs.Frame) {
 			location = mappedLocation
 		} else {
 			// Handle error if the timezone abbreviation is invalid
-			aprsHelper.AprsTextReply(fmt.Sprintf("Error: Invalid timezone abbreviation %s", arg), f)
+			client.AprsTextReply(fmt.Sprintf("Error: Invalid timezone abbreviation %s", arg), f)
 			return
 		}
 	}
@@ -41,7 +41,7 @@ func Time(args []string, f aprs.Frame) {
 	loc, err := time.LoadLocation(location)
 	if err != nil {
 		// Handle error if the timezone is invalid
-		aprsHelper.AprsTextReply(fmt.Sprintf("Error: Invalid timezone %s", location), f)
+		client.AprsTextReply(fmt.Sprintf("Error: Invalid timezone %s", location), f)
 		return
 	}
 
@@ -50,5 +50,5 @@ func Time(args []string, f aprs.Frame) {
 	formattedTime := currentTime.Format("02 Jan 06 15:04:05 MST")
 
 	// Send the formatted time as a reply
-	aprsHelper.AprsTextReply(formattedTime, f)
+	client.AprsTextReply(formattedTime, f)
 }

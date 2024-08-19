@@ -10,6 +10,12 @@ import (
 	"unicode/utf8"
 )
 
+type APRSUserClient struct {
+	callSign string
+	ssid     int
+	password int
+}
+
 func ExtractCommand(message string) string {
 	// Remove the header (everything before and including the first space)
 	parts := strings.SplitN(message, " :", 2)
@@ -97,11 +103,11 @@ func spaces(n int) string {
 	return " " + string(make([]rune, n-1)) // Create a string with n spaces
 }
 
-func GenerateMessageReplyFrame(messageContent string, f aprs.Frame) aprs.Frame {
+func (client APRSUserClient) GenerateMessageReplyFrame(messageContent string, f aprs.Frame) aprs.Frame {
 	personWhoMessagedMe := ExtractAuthor(f)
 	botStation := aprs.Addr{
-		Call: "KQ4NRT",
-		SSID: 6,
+		Call: client.callSign,
+		SSID: client.ssid,
 	}
 	botToCall := aprs.Addr{
 		Call: "APZ727",
@@ -129,9 +135,24 @@ func sendMessageFrame(f aprs.Frame) {
 	}
 }
 
-func AprsTextReply(text string, f aprs.Frame) {
+func extractSSIDFromCallSSID(input string) (string, int) {
+	var split = strings.Split(input, "-")
+	var callSign = split[0]
+	var ssid, err = strconv.Atoi(split[1])
+	if err != nil {
+		panic("Failed to pull callsign and ssid")
+	}
+	return callSign, ssid
+}
+
+func InitAPRSClient(callandSSID string, APRSPassword int) APRSUserClient {
+	var call, ssid = extractSSIDFromCallSSID(callandSSID)
+	return APRSUserClient{callSign: call, ssid: ssid, password: APRSPassword}
+}
+
+func (client APRSUserClient) AprsTextReply(text string, f aprs.Frame) {
 	if len(text) <= 67 {
-		sendMessageFrame(GenerateMessageReplyFrame(text, f))
+		sendMessageFrame(client.GenerateMessageReplyFrame(text, f))
 	} else {
 		// split the frame text into several packets and send each of them
 		var messages = splitStringByLength(text, 66)
@@ -139,7 +160,7 @@ func AprsTextReply(text string, f aprs.Frame) {
 		fmt.Println(messages)
 		for _, message := range messages {
 			//fmt.Println("sending message", i, message)
-			sendMessageFrame(GenerateMessageReplyFrame(message, f))
+			sendMessageFrame(client.GenerateMessageReplyFrame(message, f))
 			time.Sleep(3 * time.Second)
 		}
 		return

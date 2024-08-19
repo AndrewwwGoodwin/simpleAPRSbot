@@ -10,15 +10,15 @@ import (
 	"unicode"
 )
 
-func CalculateCommand(args []string, f aprs.Frame) {
+func CalculateCommand(args []string, f aprs.Frame, client aprsHelper.APRSUserClient) {
 	// this is a calculator. takes in a string, and returns an answer
 	var input = strings.Join(args, " ")
 	calculate, err := Calculate(input)
 	if err != nil {
-		aprsHelper.AprsTextReply(err.Error(), f)
+		client.AprsTextReply(err.Error(), f)
 		return
 	} else {
-		aprsHelper.AprsTextReply(strconv.FormatFloat(calculate, 'g', 5, 64), f)
+		client.AprsTextReply(strconv.FormatFloat(calculate, 'g', 5, 64), f)
 		return
 	}
 }

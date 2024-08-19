@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func CW(args []string, f aprs.Frame) {
+func CW(args []string, f aprs.Frame, client aprsHelper.APRSUserClient) {
 	var toEncode = strings.Join(args, " ")
 	// use regex to ensure that the input string can be converted to morse
 	var isValid = regexp.MustCompile(`^[a-zA-Z0-9 .,?'!/()]+$`).MatchString(toEncode)
@@ -15,10 +15,10 @@ func CW(args []string, f aprs.Frame) {
 	if isValid {
 		// so if the text is valid, we need to generate a string representing morse code for the input
 		var morseString = generateMorse(toEncode)
-		aprsHelper.AprsTextReply(morseString, f)
+		client.AprsTextReply(morseString, f)
 		return
 	} else {
-		aprsHelper.AprsTextReply("Invalid Characters found in input. a-z A-Z 0-9 only.", f)
+		client.AprsTextReply("Invalid Characters found in input. a-z A-Z 0-9 only.", f)
 	}
 }
 

@@ -15,9 +15,9 @@ import (
 	"strings"
 )
 
-type CommandFunc func(args []string, f aprs.Frame)
+type CommandFunc func(args []string, f aprs.Frame, client aprsHelper.APRSUserClient)
 
-type CommandFuncAPIKeys func(args []string, f aprs.Frame, aprsFiKey api.Keys)
+type CommandFuncAPIKeys func(args []string, f aprs.Frame, aprsFiKey api.Keys, client aprsHelper.APRSUserClient)
 
 var commandRegistry = map[string]CommandFunc{
 	"ping":     general.Ping,
@@ -62,6 +62,9 @@ func main() {
 	APIKeyObj.APRSFIkey = *APRSFIkey
 	APIKeyObj.OpenWeatherMapkey = *OpenWeatherMapkey
 
+	// we also need to create an instance of APRSUserClient so we can reply to messages
+	var client = aprsHelper.InitAPRSClient(*aprsCALL, *aprsPass)
+
 	log.Println("Receiving")
 	for {
 		ctx := context.Background()
@@ -75,9 +78,9 @@ func main() {
 				commandName := strings.ToLower(strings.Split(aprsHelper.ExtractCommand(f.Text), " ")[0])
 				commandArgs, _ := aprsHelper.ExtractArgs(aprsHelper.ExtractCommand(f.Text))
 				if commandFunc, exists := commandRegistry[commandName]; exists {
-					commandFunc(commandArgs, f) // Call the corresponding function
+					commandFunc(commandArgs, f, client) // Call the corresponding function
 				} else if commandFuncAPRSFi, existsAprs := commandRegistryAPRSFI[strings.ToLower(commandName)]; existsAprs {
-					commandFuncAPRSFi(commandArgs, f, APIKeyObj)
+					commandFuncAPRSFi(commandArgs, f, APIKeyObj, client)
 				} else {
 					fmt.Println("Unknown command:", commandName)
 				}

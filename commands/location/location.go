@@ -8,7 +8,7 @@ import (
 	"simpleAPRSbot-go/helpers/aprsHelper"
 )
 
-func Location(args []string, f aprs.Frame, apiKey api.Keys) {
+func Location(args []string, f aprs.Frame, apiKey api.Keys, client aprsHelper.APRSUserClient) {
 	// this command gets the user's last seen location, and returns their current zip code.
 	// step 1: get the user's last location
 
@@ -19,7 +19,7 @@ func Location(args []string, f aprs.Frame, apiKey api.Keys) {
 	case 1:
 		callerCallsign = args[0]
 	default:
-		aprsHelper.AprsTextReply("Too many args", f)
+		client.AprsTextReply("Too many args", f)
 		return
 	}
 
@@ -29,7 +29,7 @@ func Location(args []string, f aprs.Frame, apiKey api.Keys) {
 	var data, err = wrapper.GetLocation(callerCallsign)
 	if err != nil {
 		fmt.Println(err)
-		aprsHelper.AprsTextReply(err.Error(), f)
+		client.AprsTextReply(err.Error(), f)
 		return
 	}
 	var locationData = data.Entries[0]
@@ -38,6 +38,6 @@ func Location(args []string, f aprs.Frame, apiKey api.Keys) {
 	// in the future I want to send this lat/long off to some geocoding api
 	// which will then return a lot more detailed information such as city,state zipcode, county, coordinates,
 	// how long ago, via aprs.fi
-	aprsHelper.AprsTextReply(locationData.Lat+" "+locationData.Lng+" via aprs.fi", f)
+	client.AprsTextReply(locationData.Lat+" "+locationData.Lng+" via aprs.fi", f)
 	return
 }

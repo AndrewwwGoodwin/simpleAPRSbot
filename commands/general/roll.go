@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func Roll(args []string, f aprs.Frame) {
+func Roll(args []string, f aprs.Frame, client aprsHelper.APRSUserClient) {
 	// take in 1 arg that would allow for setting max roll
 	// otherwise default to rolling out of 100
 	var maxRoll = 100
@@ -19,6 +19,6 @@ func Roll(args []string, f aprs.Frame) {
 			maxRoll = 100
 		}
 	}
-	aprsHelper.AprsTextReply(strconv.Itoa(rand.IntN(maxRoll)), f)
+	client.AprsTextReply(strconv.Itoa(rand.IntN(maxRoll)), f)
 	return
 }

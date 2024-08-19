@@ -6,7 +6,6 @@ import (
 	"math/rand/v2"
 	"strconv"
 	"strings"
-	"time"
 	"unicode/utf8"
 )
 
@@ -164,10 +163,13 @@ func (client APRSUserClient) AprsTextReply(text string, f aprs.Frame) {
 		var messages = splitStringByLength(text, 66)
 		fmt.Println("message split")
 		fmt.Println(messages)
+		var packets = make([]aprs.Frame, len(messages))
 		for _, message := range messages {
 			//fmt.Println("sending message", i, message)
-			SendMessageFrame(client.GenerateMessageReplyFrame(message, f))
-			time.Sleep(3 * time.Second)
+			packets = append(packets, client.GenerateMessageReplyFrame(message, f))
+		}
+		for _, packet := range packets {
+			client.MessageQueue.Push(packet)
 		}
 		return
 	}

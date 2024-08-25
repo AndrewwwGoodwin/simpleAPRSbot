@@ -10,6 +10,7 @@ import (
 	"os/signal"
 	"simpleAPRSbot-go/commands/general"
 	"simpleAPRSbot-go/commands/location"
+	osuCommands "simpleAPRSbot-go/commands/osu"
 	"simpleAPRSbot-go/helpers/api"
 	"simpleAPRSbot-go/helpers/aprsHelper"
 	"strings"
@@ -34,11 +35,12 @@ var commandRegistry = map[string]CommandFunc{
 	"eval":     general.CalculateCommand,
 }
 
-var commandRegistryAPRSFI = map[string]CommandFuncAPIKeys{
+var commandRegistryAPIKeysRequired = map[string]CommandFuncAPIKeys{
 	"loc":      location.Location,
 	"location": location.Location,
 	"w":        location.Weather,
 	"weather":  location.Weather,
+	"osu":      osuCommands.Osu,
 }
 
 var aprsCALL = flag.String("APRS_CALL", "N0CALL-0", "N0CALL-0")
@@ -56,12 +58,16 @@ func main() {
 	// load up our flags
 	APRSFIkey := flag.String("APRS_FI_API_KEY", "", "APRS FI API Key")
 	OpenWeatherMapKey := flag.String("OWM_FI_API_KEY", "", "OpenWeatherMap API Key")
+	osuClientID := flag.Int("OSU_CLIENT_ID", 0, "OSU Client ID")
+	osuClientSecret := flag.String("OSU_CLIENT_SECRET", "", "OSU Client Secret")
 	flag.Parse()
 
 	//shove them in an object we can ship around the program
 	var APIKeyObj api.Keys
 	APIKeyObj.APRSFIkey = *APRSFIkey
 	APIKeyObj.OpenWeatherMapkey = *OpenWeatherMapKey
+	APIKeyObj.OsuClientID = *osuClientID
+	APIKeyObj.OsuClientSecret = *osuClientSecret
 
 	// we also need to create an instance of APRSUserClient, so we can reply to messages
 	var client = aprsHelper.InitAPRSClient(*aprsCALL, *aprsPass)
@@ -102,7 +108,7 @@ func commandListener(client *aprsHelper.APRSUserClient, apiKeyObj api.Keys) {
 				commandArgs, _ := aprsHelper.ExtractArgs(aprsHelper.ExtractCommand(f.Text))
 				if commandFunc, exists := commandRegistry[commandName]; exists {
 					commandFunc(commandArgs, f, client) // Call the corresponding function
-				} else if commandFuncAPRSFi, existsAprs := commandRegistryAPRSFI[strings.ToLower(commandName)]; existsAprs {
+				} else if commandFuncAPRSFi, existsAprs := commandRegistryAPIKeysRequired[strings.ToLower(commandName)]; existsAprs {
 					commandFuncAPRSFi(commandArgs, f, apiKeyObj, client)
 				} else {
 					fmt.Println("Unknown command:", commandName)

@@ -3,11 +3,11 @@ package general
 import (
 	"github.com/ebarkie/aprs"
 	"math/rand/v2"
-	"simpleAPRSbot-go/helpers/aprsHelper"
+	"simpleAPRSbot-go/helpers/APRS"
 	"strconv"
 )
 
-func Roll(args []string, f aprs.Frame, client *aprsHelper.APRSUserClient) {
+func Roll(args []string, f aprs.Frame, client *APRS.UserClient) {
 	// take in 1 arg that would allow for setting max roll
 	// otherwise default to rolling out of 100
 	var maxRoll = 100
@@ -19,6 +19,6 @@ func Roll(args []string, f aprs.Frame, client *aprsHelper.APRSUserClient) {
 			maxRoll = 100
 		}
 	}
-	client.AprsTextReply(strconv.Itoa(rand.IntN(maxRoll)), f)
+	client.Reply(strconv.Itoa(rand.IntN(maxRoll)), f)
 	return
 }

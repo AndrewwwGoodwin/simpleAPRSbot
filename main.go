@@ -8,8 +8,8 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"simpleAPRSbot-go/helpers/APRS"
 	"simpleAPRSbot-go/helpers/api"
-	"simpleAPRSbot-go/helpers/aprsHelper"
 	"strings"
 	"time"
 )
@@ -41,41 +41,48 @@ func exitListener() {
 	os.Exit(0)
 }
 
-func queueProcessor(client *aprsHelper.APRSUserClient) {
+func queueProcessor(client *APRS.UserClient) {
 	for {
 		if len(client.MessageQueue.Queue) <= 0 {
+			// do nothing if the queue is empty
 			continue
 		} else {
-			aprsHelper.SendMessageFrame(client.MessageQueue.Pop())
+			// pull a message out of the queue, and send it
+			APRS.SendMessageFrame(client.MessageQueue.Pop())
 			// this globally lets us only send a message every x secs. can be turned up or down based on load
 			time.Sleep(1 * time.Second)
 		}
 	}
 }
 
-func commandListener(client *aprsHelper.APRSUserClient) {
+func commandListener(client *APRS.UserClient) {
 	for {
 		ctx := context.Background()
 		fc := aprs.RecvIS(ctx, "rotate.aprs.net:14580", aprs.Addr{Call: client.CallSign, SSID: client.APRSSsid}, client.APRSPassword, "g/"+client.APRSCallAndSSID)
 		for receivedMessageFrame := range fc {
 			fmt.Println("")
 			fmt.Println(receivedMessageFrame)
-			if strings.HasPrefix(receivedMessageFrame.Text, ":"+aprsHelper.EnsureLength(client.APRSCallAndSSID)+":!") {
+			fmt.Printf("Received: [%s]\n", receivedMessageFrame.Text)
+			fmt.Printf("Expected: [%s]\n", ":"+APRS.EnsureLength(client.APRSCallAndSSID)+":!")
+			if strings.HasPrefix(receivedMessageFrame.Text, ":"+APRS.EnsureLength(client.APRSCallAndSSID)+":!") {
 				client.SendAck(receivedMessageFrame)
 				//strip the prefix
-				commandName := strings.ToLower(strings.Split(aprsHelper.ExtractCommand(receivedMessageFrame.Text), " ")[0])
-				commandArgs, _ := aprsHelper.ExtractArgs(aprsHelper.ExtractCommand(receivedMessageFrame.Text))
-				if commandFunc, exists := commandRegistry[commandName]; exists {
-					commandFunc(commandArgs, receivedMessageFrame, client) // Call the corresponding function
+				command, err := APRS.GetCommand(receivedMessageFrame.Text)
+				if err != nil {
+					log.Println(err)
+					continue
+				}
+				if commandFunc, exists := commandRegistry[command.Name]; exists {
+					commandFunc(command.Arguments, receivedMessageFrame, client) // Call the corresponding function
 				} else {
-					fmt.Println("Unknown command:", commandName)
+					fmt.Println("Unknown command:", command.Name)
 				}
 			} else {
 				// dont ack acks
-				if strings.HasPrefix(receivedMessageFrame.Text, ":"+aprsHelper.EnsureLength(client.CallSign)+":ack") {
+				if strings.HasPrefix(receivedMessageFrame.Text, ":"+APRS.EnsureLength(client.CallSign)+":ack") {
 					continue
 					// dont ack messages not sent to us
-				} else if !strings.HasPrefix(receivedMessageFrame.Text, ":"+aprsHelper.EnsureLength(client.CallSign)+":") {
+				} else if !strings.HasPrefix(receivedMessageFrame.Text, ":"+APRS.EnsureLength(client.CallSign)+":") {
 					continue
 				} else {
 					// if we make it through all that, finally ack the message
@@ -86,7 +93,7 @@ func commandListener(client *aprsHelper.APRSUserClient) {
 	}
 }
 
-func initAPRSClient() *aprsHelper.APRSUserClient {
+func initAPRSClient() *APRS.UserClient {
 	var aprsCALL = flag.String("APRS_CALL", "N0CALL-0", "N0CALL-0")
 	var aprsPass = flag.Int("APRS_PASS", 000000, "00000")
 	var APRSFIkey = flag.String("APRS_FI_API_KEY", "", "APRS FI API Key")
@@ -102,5 +109,5 @@ func initAPRSClient() *aprsHelper.APRSUserClient {
 		APRSFIkey:         *APRSFIkey,
 	})
 
-	return aprsHelper.InitAPRSClient(*aprsCALL, *aprsPass, APIClients)
+	return APRS.InitAPRSClient(*aprsCALL, *aprsPass, APIClients)
 }

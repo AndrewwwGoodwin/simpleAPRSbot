@@ -4,21 +4,21 @@ import (
 	"errors"
 	"github.com/ebarkie/aprs"
 	"math"
-	"simpleAPRSbot-go/helpers/aprsHelper"
+	"simpleAPRSbot-go/helpers/APRS"
 	"strconv"
 	"strings"
 	"unicode"
 )
 
-func CalculateCommand(args []string, f aprs.Frame, client *aprsHelper.APRSUserClient) {
+func CalculateCommand(args []string, f aprs.Frame, client *APRS.UserClient) {
 	// this is a calculator. takes in a string, and returns an answer
 	var input = strings.Join(args, " ")
 	calculate, err := Calculate(input)
 	if err != nil {
-		client.AprsTextReply(err.Error(), f)
+		client.Reply(err.Error(), f)
 		return
 	} else {
-		client.AprsTextReply(strconv.FormatFloat(calculate, 'g', 5, 64), f)
+		client.Reply(strconv.FormatFloat(calculate, 'g', 5, 64), f)
 		return
 	}
 }

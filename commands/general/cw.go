@@ -3,11 +3,11 @@ package general
 import (
 	"github.com/ebarkie/aprs"
 	"regexp"
-	"simpleAPRSbot-go/helpers/aprsHelper"
+	"simpleAPRSbot-go/helpers/APRS"
 	"strings"
 )
 
-func CW(args []string, f aprs.Frame, client *aprsHelper.APRSUserClient) {
+func CW(args []string, f aprs.Frame, client *APRS.UserClient) {
 	var toEncode = strings.Join(args, " ")
 	// use regex to ensure that the input string can be converted to morse
 	var isValid = regexp.MustCompile(`^[a-zA-Z0-9 .,?'!/()]+$`).MatchString(toEncode)
@@ -15,10 +15,10 @@ func CW(args []string, f aprs.Frame, client *aprsHelper.APRSUserClient) {
 	if isValid {
 		// so if the text is valid, we need to generate a string representing morse code for the input
 		var morseString = generateMorse(toEncode)
-		client.AprsTextReply(morseString, f)
+		client.Reply(morseString, f)
 		return
 	} else {
-		client.AprsTextReply("Invalid Characters found in input. a-z A-Z 0-9 only.", f)
+		client.Reply("Invalid Characters found in input. a-z A-Z 0-9 only.", f)
 	}
 }
 

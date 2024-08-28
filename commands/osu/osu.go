@@ -4,29 +4,29 @@ import (
 	"fmt"
 	"github.com/ebarkie/aprs"
 	"math"
+	"simpleAPRSbot-go/helpers/APRS"
 	"simpleAPRSbot-go/helpers/api/osu"
-	"simpleAPRSbot-go/helpers/aprsHelper"
 	"strconv"
 	"strings"
 )
 
 // copy BathBot behavior and return a basic summary of a user's profile
 
-func Osu(args []string, f aprs.Frame, client *aprsHelper.APRSUserClient) {
+func Osu(args []string, f aprs.Frame, client *APRS.UserClient) {
 	var username = args[0]
 	if username == "" {
-		client.AprsTextReply("You need to specify a username!", f)
+		client.Reply("You need to specify a username!", f)
 	}
 
 	var osuClient = client.ApiClients.OSUClient
 
 	user, err := osuClient.GetUser(username, osu.ModeOsu, osu.KeyUsername)
 	if err != nil {
-		client.AprsTextReply("Error getting user", f)
+		client.Reply("Error getting user", f)
 		return
 	}
 	if user == nil {
-		client.AprsTextReply("User not found", f)
+		client.Reply("User not found", f)
 		return
 	}
 	fmt.Println(user)
@@ -41,7 +41,7 @@ func Osu(args []string, f aprs.Frame, client *aprsHelper.APRSUserClient) {
 	var userMedalCount = "Medals: " + strconv.Itoa(len(user.UserAchievements))
 	var userPeakRank = "Peak Rank: #" + IntToCommaString(user.RankHighest.Rank) + " (" + user.RankHighest.UpdatedAt.Format("01/02/2006") + ")"
 	var returnString = userUsername + ": " + userPP + " (" + userGlobalRank + " " + userCountryRank + ") " + userAcc + " " + userLevel + " " + userPlaycount + " " + userHours + " " + userMedalCount + " " + userPeakRank
-	client.AprsTextReply(returnString, f)
+	client.Reply(returnString, f)
 	return
 }
 

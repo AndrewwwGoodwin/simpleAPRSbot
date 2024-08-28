@@ -3,12 +3,11 @@ package APRS
 import (
 	"fmt"
 	"github.com/ebarkie/aprs"
-	"strconv"
 	"strings"
 )
 
-func ExtractAuthor(frame aprs.Frame) string {
-	var author = frame.Src.Call + "-" + strconv.Itoa(frame.Src.SSID)
+func GetAuthor(frame aprs.Frame) string {
+	var author = frame.Src.String()
 	return author
 }
 
@@ -20,7 +19,7 @@ func SendMessageFrame(f aprs.Frame) {
 	}
 }
 
-func ExtractCommand(message string) string {
+func GetCommand(message string) string {
 	// Remove the header (everything before and including the first space)
 	parts := strings.SplitN(message, " :", 2)
 	if len(parts) < 2 {
@@ -39,7 +38,7 @@ func ExtractCommand(message string) string {
 	return strings.TrimSpace(messageBody)
 }
 
-func ExtractArgs(message string) ([]string, error) {
+func GetArgs(message string) ([]string, error) {
 	// Remove the leading '!'
 	message = strings.TrimPrefix(message, "!")
 
@@ -59,5 +58,5 @@ func EnsureLength(input string) string {
 	if len(input) >= 9 {
 		return input[:9] // Truncate if longer than 9 characters
 	}
-	return input + spaces(9-len(input)) // Append spaces to reach 9 characters
+	return input + string(make([]rune, 9-len(input))) // Append spaces to reach 9 characters
 }

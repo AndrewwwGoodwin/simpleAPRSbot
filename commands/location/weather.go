@@ -2,21 +2,18 @@ package location
 
 import (
 	"github.com/ebarkie/aprs"
-	"simpleAPRSbot-go/helpers/api"
-	"simpleAPRSbot-go/helpers/api/OpenWeatherMapWrapper"
-	"simpleAPRSbot-go/helpers/api/aprsFiWrapper"
 	"simpleAPRSbot-go/helpers/aprsHelper"
 	"strconv"
 )
 
-func Weather(args []string, f aprs.Frame, apiKey api.Keys, client *aprsHelper.APRSUserClient) {
-	if len(args) < 0 {
+func Weather(args []string, f aprs.Frame, client *aprsHelper.APRSUserClient) {
+	if len(args) > 0 {
 		// the user specified something! let's see what it was!
 		client.AprsTextReply("Not yet implemented!", f)
 		return
 	} else {
 		// no location provided, lets just default to their last APRS location!
-		var aprsfi = aprsFiWrapper.NewAprsFiWrapper(apiKey)
+		var aprsfi = client.ApiClients.APRSFi
 		var messageAuthor = aprsHelper.ExtractAuthor(f)
 
 		locationInfo, err := aprsfi.GetLocation(messageAuthor)
@@ -26,7 +23,7 @@ func Weather(args []string, f aprs.Frame, apiKey api.Keys, client *aprsHelper.AP
 		}
 
 		//with the location info, we need to give OpenWeatherMap a yell
-		var owm = OpenWeatherMapWrapper.New(apiKey)
+		var owm = client.ApiClients.OpenWeatherMapClient
 		err, weather := owm.GetWeather(locationInfo.Entries[0].Lat, locationInfo.Entries[0].Lng)
 		if err != nil {
 			client.AprsTextReply("Unable to get weather", f)

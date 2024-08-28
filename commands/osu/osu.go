@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/ebarkie/aprs"
 	"math"
-	"simpleAPRSbot-go/helpers/api"
 	"simpleAPRSbot-go/helpers/api/osu"
 	"simpleAPRSbot-go/helpers/aprsHelper"
 	"strconv"
@@ -13,17 +12,14 @@ import (
 
 // copy BathBot behavior and return a basic summary of a user's profile
 
-func Osu(args []string, f aprs.Frame, apiKey api.Keys, client *aprsHelper.APRSUserClient) {
+func Osu(args []string, f aprs.Frame, client *aprsHelper.APRSUserClient) {
 	var username = args[0]
 	if username == "" {
 		client.AprsTextReply("You need to specify a username!", f)
 	}
 
-	var osuClient, err = osu.InitializeOsuClient(apiKey.OsuClientID, apiKey.OsuClientSecret, "client_credentials")
-	if err != nil {
-		client.AprsTextReply("Error initializing Osu client", f)
-		return
-	}
+	var osuClient = client.ApiClients.OSUClient
+
 	user, err := osuClient.GetUser(username, osu.ModeOsu, osu.KeyUsername)
 	if err != nil {
 		client.AprsTextReply("Error getting user", f)

@@ -60,8 +60,12 @@ func (client *OsuAPIClient) GetUser(user string, mode *ModeString, key *GetUserK
 	request.Header.Set("Authorization", "Bearer "+ccTokenDeref)
 
 	query := request.URL.Query()
-	query.Add("key", keyString)
-	request.URL.RawQuery = query.Encode()
+	query.Add("country", keyString)
+	//query.Add("cursor", nil)
+	//query.Add("filter", nil)
+	//query.Add("spotlight", nil)
+	//query.Add("variant", nil)
+	//request.URL.RawQuery = query.Encode()
 
 	// now that the request is built, lets send it!
 	requestData, err := client.httpClient.Do(request)

@@ -1,4 +1,4 @@
-package aprsFiWrapper
+package AprsFiWrapper
 
 import (
 	"encoding/json"
@@ -6,20 +6,19 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"simpleAPRSbot-go/helpers/api"
 )
 
 var endpoint string = "https://api.aprs.fi/api"
 
-type AprsFiWrapper struct {
+type AprsFiClient struct {
 	apiKey string
 }
 
-func NewAprsFiWrapper(apiKey api.Keys) *AprsFiWrapper {
-	return &AprsFiWrapper{apiKey: apiKey.APRSFIkey}
+func InitializeAprsFiClient(apiKey string) *AprsFiClient {
+	return &AprsFiClient{apiKey: apiKey}
 }
 
-func (wrapper AprsFiWrapper) GetLocation(callAndSSID string) (*AprsFiLocationStruct, error) {
+func (wrapper AprsFiClient) GetLocation(callAndSSID string) (*AprsFiLocationStruct, error) {
 	resp, err := http.Get(endpoint + "/get?name=" + callAndSSID + "&apikey=" + wrapper.apiKey + "&format=json&what=loc")
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to aprsfi: %v", err)

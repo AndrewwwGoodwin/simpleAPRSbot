@@ -4,16 +4,19 @@ import (
 	"fmt"
 	"github.com/ebarkie/aprs"
 	"math/rand/v2"
+	"simpleAPRSbot-go/helpers/api"
 	"strconv"
 	"strings"
 	"unicode/utf8"
 )
 
 type APRSUserClient struct {
-	callSign     string
-	ssid         int
-	password     int
-	MessageQueue *MessageQueue
+	CallSign        string
+	APRSSsid        int
+	APRSCallAndSSID string
+	APRSPassword    int
+	MessageQueue    *MessageQueue
+	ApiClients      api.Clients
 }
 
 func ExtractCommand(message string) string {
@@ -73,8 +76,8 @@ func (client APRSUserClient) SendAck(f aprs.Frame) {
 	messageNum, _ := extractMessageNumber(f.Text)
 	personWhoMessagedMe := ExtractAuthor(f)
 	botStation := aprs.Addr{
-		Call: client.callSign,
-		SSID: client.ssid,
+		Call: client.CallSign,
+		SSID: client.APRSSsid,
 	}
 	botToCall := aprs.Addr{
 		Call: "APZ727",
@@ -106,8 +109,8 @@ func spaces(n int) string {
 func (client APRSUserClient) GenerateMessageReplyFrame(messageContent string, f aprs.Frame) aprs.Frame {
 	personWhoMessagedMe := ExtractAuthor(f)
 	botStation := aprs.Addr{
-		Call: client.callSign,
-		SSID: client.ssid,
+		Call: client.CallSign,
+		SSID: client.APRSSsid,
 	}
 	botToCall := aprs.Addr{
 		Call: "APZ727",
@@ -140,15 +143,15 @@ func extractSSIDFromCallSSID(input string) (string, int) {
 	var callSign = split[0]
 	var ssid, err = strconv.Atoi(split[1])
 	if err != nil {
-		panic("Failed to pull callsign and ssid")
+		panic("Failed to pull callsign and APRSSsid")
 	}
 	return callSign, ssid
 }
 
-func InitAPRSClient(callandSSID string, APRSPassword int) *APRSUserClient {
+func InitAPRSClient(callandSSID string, APRSPassword int, apiClients api.Clients) *APRSUserClient {
 	var call, ssid = extractSSIDFromCallSSID(callandSSID)
 	var messageQueue = NewMessageQueue()
-	return &APRSUserClient{callSign: call, ssid: ssid, password: APRSPassword, MessageQueue: messageQueue}
+	return &APRSUserClient{CallSign: call, APRSCallAndSSID: callandSSID, APRSSsid: ssid, APRSPassword: APRSPassword, MessageQueue: messageQueue, ApiClients: apiClients}
 }
 
 func (client APRSUserClient) AprsTextReply(text string, f aprs.Frame) {

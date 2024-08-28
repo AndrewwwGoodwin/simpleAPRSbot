@@ -3,12 +3,10 @@ package location
 import (
 	"fmt"
 	"github.com/ebarkie/aprs"
-	"simpleAPRSbot-go/helpers/api"
-	"simpleAPRSbot-go/helpers/api/aprsFiWrapper"
 	"simpleAPRSbot-go/helpers/aprsHelper"
 )
 
-func Location(args []string, f aprs.Frame, apiKey api.Keys, client *aprsHelper.APRSUserClient) {
+func Location(args []string, f aprs.Frame, client *aprsHelper.APRSUserClient) {
 	// this command gets the user's last seen location, and returns their current zip code.
 	// step 1: get the user's last location
 
@@ -25,7 +23,7 @@ func Location(args []string, f aprs.Frame, apiKey api.Keys, client *aprsHelper.A
 
 	// now that we know who to look for, lets find them!
 	// ring up the APRSFi API
-	var wrapper = aprsFiWrapper.NewAprsFiWrapper(apiKey)
+	var wrapper = client.ApiClients.APRSFi
 	var data, err = wrapper.GetLocation(callerCallsign)
 	if err != nil {
 		fmt.Println(err)

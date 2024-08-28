@@ -5,18 +5,17 @@ import (
 	"errors"
 	"io"
 	"net/http"
-	"simpleAPRSbot-go/helpers/api"
 )
 
-type OpenWeatherMapWrapper struct {
+type OpenWeatherMapClient struct {
 	apikey string
 }
 
-func New(apikey api.Keys) *OpenWeatherMapWrapper {
-	return &OpenWeatherMapWrapper{apikey: apikey.OpenWeatherMapkey}
+func New(apikey string) *OpenWeatherMapClient {
+	return &OpenWeatherMapClient{apikey: apikey}
 }
 
-func (owm OpenWeatherMapWrapper) GetWeather(lat string, lon string) (error, *WeatherJsonFormat) {
+func (owm OpenWeatherMapClient) GetWeather(lat string, lon string) (error, *WeatherJsonFormat) {
 	//https://api.openweathermap.org/data/3.0/onecall?lat={lat}&lon={lon}&exclude={part}&appid={API key}
 	resp, err := http.Get("https://api.openweathermap.org/data/3.0/onecall?lat=" + lat + "&lon=" + lon + "&exclude=minutely,hourly,alerts&appid=" + owm.apikey)
 	if err != nil {

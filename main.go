@@ -96,29 +96,29 @@ func commandListener(client *aprsHelper.APRSUserClient) {
 	for {
 		ctx := context.Background()
 		fc := aprs.RecvIS(ctx, "rotate.aprs.net:14580", aprs.Addr{Call: client.CallSign, SSID: client.APRSSsid}, client.APRSPassword, "g/"+client.APRSCallAndSSID)
-		for recievedMessageFrame := range fc {
+		for receivedMessageFrame := range fc {
 			fmt.Println("")
-			fmt.Println(recievedMessageFrame)
-			if strings.HasPrefix(recievedMessageFrame.Text, ":"+aprsHelper.EnsureLength(client.APRSCallAndSSID)+":!") {
-				client.SendAck(recievedMessageFrame)
+			fmt.Println(receivedMessageFrame)
+			if strings.HasPrefix(receivedMessageFrame.Text, ":"+aprsHelper.EnsureLength(client.APRSCallAndSSID)+":!") {
+				client.SendAck(receivedMessageFrame)
 				//strip the prefix
-				commandName := strings.ToLower(strings.Split(aprsHelper.ExtractCommand(recievedMessageFrame.Text), " ")[0])
-				commandArgs, _ := aprsHelper.ExtractArgs(aprsHelper.ExtractCommand(recievedMessageFrame.Text))
+				commandName := strings.ToLower(strings.Split(aprsHelper.ExtractCommand(receivedMessageFrame.Text), " ")[0])
+				commandArgs, _ := aprsHelper.ExtractArgs(aprsHelper.ExtractCommand(receivedMessageFrame.Text))
 				if commandFunc, exists := commandRegistry[commandName]; exists {
-					commandFunc(commandArgs, recievedMessageFrame, client) // Call the corresponding function
+					commandFunc(commandArgs, receivedMessageFrame, client) // Call the corresponding function
 				} else {
 					fmt.Println("Unknown command:", commandName)
 				}
 			} else {
 				// dont ack acks
-				if strings.HasPrefix(recievedMessageFrame.Text, ":"+aprsHelper.EnsureLength(client.CallSign)+":ack") {
+				if strings.HasPrefix(receivedMessageFrame.Text, ":"+aprsHelper.EnsureLength(client.CallSign)+":ack") {
 					continue
 					// dont ack messages not sent to us
-				} else if !strings.HasPrefix(recievedMessageFrame.Text, ":"+aprsHelper.EnsureLength(client.CallSign)+":") {
+				} else if !strings.HasPrefix(receivedMessageFrame.Text, ":"+aprsHelper.EnsureLength(client.CallSign)+":") {
 					continue
 				} else {
 					// if we make it through all that, finally ack the message
-					client.SendAck(recievedMessageFrame)
+					client.SendAck(receivedMessageFrame)
 				}
 			}
 		}

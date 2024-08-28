@@ -14,37 +14,12 @@ import (
 	"time"
 )
 
-var APRSClient *aprsHelper.APRSUserClient
-
-func init() {
-	// load in all our flags
-	var aprsCALL = flag.String("APRS_CALL", "N0CALL-0", "N0CALL-0")
-	var aprsPass = flag.Int("APRS_PASS", 000000, "00000")
-	var APRSFIkey = flag.String("APRS_FI_API_KEY", "", "APRS FI API Key")
-	var OpenWeatherMapKey = flag.String("OWM_FI_API_KEY", "", "OpenWeatherMap API Key")
-	var osuClientID = flag.Int("OSU_CLIENT_ID", 0, "OSU Client ID")
-	var osuClientSecret = flag.String("OSU_CLIENT_SECRET", "", "OSU Client Secret")
-	flag.Parse()
-	// build our objects
-	APIClients := api.InitializeAPIClients(api.Keys{
-		OsuClientSecret:   *osuClientSecret,
-		OsuClientID:       *osuClientID,
-		OpenWeatherMapKey: *OpenWeatherMapKey,
-		APRSFIkey:         *APRSFIkey,
-	})
-
-	APRSClient = aprsHelper.InitAPRSClient(*aprsCALL, *aprsPass, APIClients)
-}
-
 func main() {
+	APRSClient := initAPRSClient()
+	// let's get started! Crank up those threads!
+
 	// waits for termination so everything shuts down nicely
-	go func() {
-		c := make(chan os.Signal, 1)
-		signal.Notify(c, os.Interrupt)
-		<-c
-		log.Println("Shutting down")
-		os.Exit(0)
-	}()
+	go exitListener()
 
 	// crank up the queue processor
 	go queueProcessor(APRSClient)
@@ -54,6 +29,14 @@ func main() {
 	log.Println("Receiving")
 
 	select {}
+}
+
+func exitListener() {
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	<-c
+	log.Println("Shutting down")
+	os.Exit(0)
 }
 
 func queueProcessor(client *aprsHelper.APRSUserClient) {
@@ -99,4 +82,23 @@ func commandListener(client *aprsHelper.APRSUserClient) {
 			}
 		}
 	}
+}
+
+func initAPRSClient() *aprsHelper.APRSUserClient {
+	var aprsCALL = flag.String("APRS_CALL", "N0CALL-0", "N0CALL-0")
+	var aprsPass = flag.Int("APRS_PASS", 000000, "00000")
+	var APRSFIkey = flag.String("APRS_FI_API_KEY", "", "APRS FI API Key")
+	var OpenWeatherMapKey = flag.String("OWM_FI_API_KEY", "", "OpenWeatherMap API Key")
+	var osuClientID = flag.Int("OSU_CLIENT_ID", 0, "OSU Client ID")
+	var osuClientSecret = flag.String("OSU_CLIENT_SECRET", "", "OSU Client Secret")
+	flag.Parse()
+
+	APIClients := api.InitializeAPIClients(api.Keys{
+		OsuClientSecret:   *osuClientSecret,
+		OsuClientID:       *osuClientID,
+		OpenWeatherMapKey: *OpenWeatherMapKey,
+		APRSFIkey:         *APRSFIkey,
+	})
+
+	return aprsHelper.InitAPRSClient(*aprsCALL, *aprsPass, APIClients)
 }

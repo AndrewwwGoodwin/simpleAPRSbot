@@ -21,7 +21,7 @@ type UserClient struct {
 
 func (client UserClient) SendAck(f aprs.Frame) {
 	messageNum, _ := extractMessageNumber(f.Text)
-	personWhoMessagedMe := ExtractAuthor(f)
+	personWhoMessagedMe := GetAuthor(f)
 	botStation := aprs.Addr{
 		Call: client.CallSign,
 		SSID: client.APRSSsid,
@@ -41,12 +41,8 @@ func (client UserClient) SendAck(f aprs.Frame) {
 	client.MessageQueue.Push(ack)
 }
 
-func spaces(n int) string {
-	return " " + string(make([]rune, n-1)) // Create a string with n spaces
-}
-
 func (client UserClient) GenerateMessageReplyFrame(messageContent string, f aprs.Frame) aprs.Frame {
-	personWhoMessagedMe := ExtractAuthor(f)
+	personWhoMessagedMe := GetAuthor(f)
 	botStation := aprs.Addr{
 		Call: client.CallSign,
 		SSID: client.APRSSsid,

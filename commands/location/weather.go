@@ -14,7 +14,7 @@ func Weather(args []string, f aprs.Frame, client *APRS.UserClient) {
 	} else {
 		// no location provided, lets just default to their last APRS location!
 		var aprsfi = client.ApiClients.APRSFi
-		var messageAuthor = APRS.ExtractAuthor(f)
+		var messageAuthor = APRS.GetAuthor(f)
 
 		locationInfo, err := aprsfi.GetLocation(messageAuthor)
 		if err != nil {

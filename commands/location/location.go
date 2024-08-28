@@ -13,7 +13,7 @@ func Location(args []string, f aprs.Frame, client *APRS.UserClient) {
 	var callerCallsign string
 	switch len(args) {
 	case 0:
-		callerCallsign = APRS.ExtractAuthor(f)
+		callerCallsign = APRS.GetAuthor(f)
 	case 1:
 		callerCallsign = args[0]
 	default:

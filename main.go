@@ -15,13 +15,15 @@ import (
 )
 
 func main() {
+	// let's get started! first, build our client
 	APRSClient := initAPRSClient()
-	// let's get started! Crank up those threads!
 
+	// next, crank up our threads!
 	// waits for termination so everything shuts down nicely
+	// kinda ironic to start up our termination first
 	go exitListener()
 
-	// crank up the queue processor
+	// turn on the queue processor thread
 	go queueProcessor(APRSClient)
 
 	// and start listening for commands

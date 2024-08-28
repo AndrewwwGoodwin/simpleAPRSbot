@@ -5,10 +5,10 @@ import (
 	"simpleAPRSbot-go/commands/general"
 	"simpleAPRSbot-go/commands/location"
 	osuCommands "simpleAPRSbot-go/commands/osu"
-	"simpleAPRSbot-go/helpers/aprsHelper"
+	"simpleAPRSbot-go/helpers/APRS"
 )
 
-type CommandFunc func(args []string, f aprs.Frame, client *aprsHelper.APRSUserClient)
+type CommandFunc func(args []string, f aprs.Frame, client *APRS.UserClient)
 
 var commandRegistry = map[string]CommandFunc{
 	"ping":     general.Ping,

@@ -2,11 +2,11 @@ package location
 
 import (
 	"github.com/ebarkie/aprs"
-	"simpleAPRSbot-go/helpers/aprsHelper"
+	"simpleAPRSbot-go/helpers/APRS"
 	"strconv"
 )
 
-func Weather(args []string, f aprs.Frame, client *aprsHelper.APRSUserClient) {
+func Weather(args []string, f aprs.Frame, client *APRS.UserClient) {
 	if len(args) > 0 {
 		// the user specified something! let's see what it was!
 		client.AprsTextReply("Not yet implemented!", f)
@@ -14,7 +14,7 @@ func Weather(args []string, f aprs.Frame, client *aprsHelper.APRSUserClient) {
 	} else {
 		// no location provided, lets just default to their last APRS location!
 		var aprsfi = client.ApiClients.APRSFi
-		var messageAuthor = aprsHelper.ExtractAuthor(f)
+		var messageAuthor = APRS.ExtractAuthor(f)
 
 		locationInfo, err := aprsfi.GetLocation(messageAuthor)
 		if err != nil {

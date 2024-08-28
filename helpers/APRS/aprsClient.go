@@ -1,4 +1,4 @@
-package aprsHelper
+package APRS
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 	"unicode/utf8"
 )
 
-type APRSUserClient struct {
+type UserClient struct {
 	CallSign        string
 	APRSSsid        int
 	APRSCallAndSSID string
@@ -19,60 +19,7 @@ type APRSUserClient struct {
 	ApiClients      api.Clients
 }
 
-func ExtractCommand(message string) string {
-	// Remove the header (everything before and including the first space)
-	parts := strings.SplitN(message, " :", 2)
-	if len(parts) < 2 {
-		return ""
-	}
-	messageBody := parts[1]
-
-	// Remove the footer (everything after and including the '{')
-	messageBody = strings.SplitN(messageBody, "{", 2)[0]
-
-	if strings.HasPrefix(messageBody, "!") {
-		messageBody = strings.TrimPrefix(messageBody, "!")
-	}
-
-	// Return the cleaned-up message
-	return strings.TrimSpace(messageBody)
-}
-
-func ExtractArgs(message string) ([]string, error) {
-	// Remove the leading '!'
-	message = strings.TrimPrefix(message, "!")
-
-	// Split the command and its arguments by spaces
-	args := strings.Fields(message)
-
-	// Ensure that there's at least a command present
-	if len(args) == 0 {
-		return nil, fmt.Errorf("no command found in the message")
-	}
-
-	// Return the arguments slice
-	return args[1:], nil
-}
-
-func extractMessageNumber(message string) (string, error) {
-	// Find the last '{' in the message
-	lastBraceIndex := strings.LastIndex(message, "{")
-	if lastBraceIndex == -1 {
-		return "", fmt.Errorf("no '{' found in the message")
-	}
-
-	// Extract everything after the last '{'
-	messageNumber := message[lastBraceIndex+1:]
-
-	// Ensure that there is a message number after '{'
-	if len(messageNumber) == 0 {
-		return "", fmt.Errorf("no message number found after '{'")
-	}
-
-	return messageNumber, nil
-}
-
-func (client APRSUserClient) SendAck(f aprs.Frame) {
+func (client UserClient) SendAck(f aprs.Frame) {
 	messageNum, _ := extractMessageNumber(f.Text)
 	personWhoMessagedMe := ExtractAuthor(f)
 	botStation := aprs.Addr{
@@ -94,19 +41,11 @@ func (client APRSUserClient) SendAck(f aprs.Frame) {
 	client.MessageQueue.Push(ack)
 }
 
-func EnsureLength(input string) string {
-	if len(input) >= 9 {
-		return input[:9] // Truncate if longer than 9 characters
-	}
-	return input + spaces(9-len(input)) // Append spaces to reach 9 characters
-}
-
-// spaces returns a string of the specified length consisting of spaces.
 func spaces(n int) string {
 	return " " + string(make([]rune, n-1)) // Create a string with n spaces
 }
 
-func (client APRSUserClient) GenerateMessageReplyFrame(messageContent string, f aprs.Frame) aprs.Frame {
+func (client UserClient) GenerateMessageReplyFrame(messageContent string, f aprs.Frame) aprs.Frame {
 	personWhoMessagedMe := ExtractAuthor(f)
 	botStation := aprs.Addr{
 		Call: client.CallSign,
@@ -125,19 +64,6 @@ func (client APRSUserClient) GenerateMessageReplyFrame(messageContent string, f 
 	return messageFrame
 }
 
-func ExtractAuthor(frame aprs.Frame) string {
-	var author = frame.Src.Call + "-" + strconv.Itoa(frame.Src.SSID)
-	return author
-}
-
-func SendMessageFrame(f aprs.Frame) {
-	err := f.SendIS("tcp://rotate.aprs.net:14580", 24233)
-	if err != nil {
-		fmt.Println("Failed to send message to APRSIS: " + err.Error())
-		return
-	}
-}
-
 func extractSSIDFromCallSSID(input string) (string, int) {
 	var split = strings.Split(input, "-")
 	var callSign = split[0]
@@ -148,13 +74,13 @@ func extractSSIDFromCallSSID(input string) (string, int) {
 	return callSign, ssid
 }
 
-func InitAPRSClient(callandSSID string, APRSPassword int, apiClients api.Clients) *APRSUserClient {
+func InitAPRSClient(callandSSID string, APRSPassword int, apiClients api.Clients) *UserClient {
 	var call, ssid = extractSSIDFromCallSSID(callandSSID)
 	var messageQueue = NewMessageQueue()
-	return &APRSUserClient{CallSign: call, APRSCallAndSSID: callandSSID, APRSSsid: ssid, APRSPassword: APRSPassword, MessageQueue: messageQueue, ApiClients: apiClients}
+	return &UserClient{CallSign: call, APRSCallAndSSID: callandSSID, APRSSsid: ssid, APRSPassword: APRSPassword, MessageQueue: messageQueue, ApiClients: apiClients}
 }
 
-func (client APRSUserClient) AprsTextReply(text string, f aprs.Frame) {
+func (client UserClient) AprsTextReply(text string, f aprs.Frame) {
 	if len(text) <= 67 {
 		// instead of directly sending the messages, lets have a queueing system that the messages get added to.
 		// in this Queue, we can listen for acks and all. We can also then monitor the Queue to see how many messages we
@@ -202,4 +128,22 @@ func splitStringByLength(s string, maxLength int) []string {
 		s = strings.TrimSpace(s[cutIndex:])
 	}
 	return result
+}
+
+func extractMessageNumber(message string) (string, error) {
+	// Find the last '{' in the message
+	lastBraceIndex := strings.LastIndex(message, "{")
+	if lastBraceIndex == -1 {
+		return "", fmt.Errorf("no '{' found in the message")
+	}
+
+	// Extract everything after the last '{'
+	messageNumber := message[lastBraceIndex+1:]
+
+	// Ensure that there is a message number after '{'
+	if len(messageNumber) == 0 {
+		return "", fmt.Errorf("no message number found after '{'")
+	}
+
+	return messageNumber, nil
 }

@@ -1,4 +1,4 @@
-package aprsHelper
+package APRS
 
 import (
 	"github.com/ebarkie/aprs"

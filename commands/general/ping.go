@@ -2,11 +2,11 @@ package general
 
 import (
 	"github.com/ebarkie/aprs"
-	"simpleAPRSbot-go/helpers/aprsHelper"
+	"simpleAPRSbot-go/helpers/APRS"
 	"strings"
 )
 
-func Ping(args []string, f aprs.Frame, client *aprsHelper.APRSUserClient) {
+func Ping(args []string, f aprs.Frame, client *APRS.UserClient) {
 	replyText := "Pong!"
 	if len(args) != 0 {
 		replyText = strings.Join(args, " ")

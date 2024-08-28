@@ -3,7 +3,7 @@ package general
 import (
 	"fmt"
 	"github.com/ebarkie/aprs"
-	"simpleAPRSbot-go/helpers/aprsHelper"
+	"simpleAPRSbot-go/helpers/APRS"
 	"strings"
 	"time"
 )
@@ -21,7 +21,7 @@ var timezoneAbbrs = map[string]string{
 	"PDT": "America/Los_Angeles",
 }
 
-func Time(args []string, f aprs.Frame, client *aprsHelper.APRSUserClient) {
+func Time(args []string, f aprs.Frame, client *APRS.UserClient) {
 	// Default timezone to UTC
 	location := "UTC"
 

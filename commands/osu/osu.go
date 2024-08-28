@@ -4,15 +4,15 @@ import (
 	"fmt"
 	"github.com/ebarkie/aprs"
 	"math"
+	"simpleAPRSbot-go/helpers/APRS"
 	"simpleAPRSbot-go/helpers/api/osu"
-	"simpleAPRSbot-go/helpers/aprsHelper"
 	"strconv"
 	"strings"
 )
 
 // copy BathBot behavior and return a basic summary of a user's profile
 
-func Osu(args []string, f aprs.Frame, client *aprsHelper.APRSUserClient) {
+func Osu(args []string, f aprs.Frame, client *APRS.UserClient) {
 	var username = args[0]
 	if username == "" {
 		client.AprsTextReply("You need to specify a username!", f)

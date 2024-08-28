@@ -44,8 +44,10 @@ func exitListener() {
 func queueProcessor(client *APRS.UserClient) {
 	for {
 		if len(client.MessageQueue.Queue) <= 0 {
+			// do nothing if the queue is empty
 			continue
 		} else {
+			// pull a message out of the queue, and send it
 			APRS.SendMessageFrame(client.MessageQueue.Pop())
 			// this globally lets us only send a message every x secs. can be turned up or down based on load
 			time.Sleep(1 * time.Second)

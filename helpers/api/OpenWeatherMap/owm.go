@@ -1,4 +1,4 @@
-package OpenWeatherMapWrapper
+package OpenWeatherMap
 
 import (
 	"encoding/json"

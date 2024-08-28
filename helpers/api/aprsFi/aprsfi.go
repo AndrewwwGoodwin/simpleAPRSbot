@@ -1,4 +1,4 @@
-package AprsFiWrapper
+package AprsFi
 
 import (
 	"encoding/json"

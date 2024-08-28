@@ -62,8 +62,6 @@ func commandListener(client *APRS.UserClient) {
 		for receivedMessageFrame := range fc {
 			fmt.Println("")
 			fmt.Println(receivedMessageFrame)
-			fmt.Printf("Received: [%s]\n", receivedMessageFrame.Text)
-			fmt.Printf("Expected: [%s]\n", ":"+APRS.EnsureLength(client.APRSCallAndSSID)+":!")
 			if strings.HasPrefix(receivedMessageFrame.Text, ":"+APRS.EnsureLength(client.APRSCallAndSSID)+":!") {
 				client.SendAck(receivedMessageFrame)
 				//strip the prefix

@@ -62,15 +62,20 @@ func commandListener(client *APRS.UserClient) {
 		for receivedMessageFrame := range fc {
 			fmt.Println("")
 			fmt.Println(receivedMessageFrame)
+			fmt.Printf("Received: [%s]\n", receivedMessageFrame.Text)
+			fmt.Printf("Expected: [%s]\n", ":"+APRS.EnsureLength(client.APRSCallAndSSID)+":!")
 			if strings.HasPrefix(receivedMessageFrame.Text, ":"+APRS.EnsureLength(client.APRSCallAndSSID)+":!") {
 				client.SendAck(receivedMessageFrame)
 				//strip the prefix
-				commandName := strings.ToLower(strings.Split(APRS.ExtractCommand(receivedMessageFrame.Text), " ")[0])
-				commandArgs, _ := APRS.ExtractArgs(APRS.ExtractCommand(receivedMessageFrame.Text))
-				if commandFunc, exists := commandRegistry[commandName]; exists {
-					commandFunc(commandArgs, receivedMessageFrame, client) // Call the corresponding function
+				command, err := APRS.GetCommand(receivedMessageFrame.Text)
+				if err != nil {
+					log.Println(err)
+					continue
+				}
+				if commandFunc, exists := commandRegistry[command.Name]; exists {
+					commandFunc(command.Arguments, receivedMessageFrame, client) // Call the corresponding function
 				} else {
-					fmt.Println("Unknown command:", commandName)
+					fmt.Println("Unknown command:", command.Name)
 				}
 			} else {
 				// dont ack acks

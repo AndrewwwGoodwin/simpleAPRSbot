@@ -25,8 +25,11 @@ var (
 
 func (client *OsuAPIClient) GetRanking(modeStringInput *ModeString, rankingTypeInput *RankingType) (*RankedReturn, error) {
 	// {{baseUrl}}/api/v2/rankings/:mode/:type?filter=all
-
-	// if modeString is nil we default to osuStandard since thats what people usually play
+	err := client.Authenticate()
+	if err != nil {
+		return nil, err
+	}
+	// if modeString is nil we default to osuStandard since that's what people usually play
 	var modeString string
 	if modeStringInput != nil {
 		modeString = string(*modeStringInput)

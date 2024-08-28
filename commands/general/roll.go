@@ -19,6 +19,6 @@ func Roll(args []string, f aprs.Frame, client *APRS.UserClient) {
 			maxRoll = 100
 		}
 	}
-	client.AprsTextReply(strconv.Itoa(rand.IntN(maxRoll)), f)
+	client.Reply(strconv.Itoa(rand.IntN(maxRoll)), f)
 	return
 }

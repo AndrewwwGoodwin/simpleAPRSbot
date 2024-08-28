@@ -32,7 +32,7 @@ func Time(args []string, f aprs.Frame, client *APRS.UserClient) {
 			location = mappedLocation
 		} else {
 			// Handle error if the timezone abbreviation is invalid
-			client.AprsTextReply(fmt.Sprintf("Error: Invalid timezone abbreviation %s", arg), f)
+			client.Reply(fmt.Sprintf("Error: Invalid timezone abbreviation %s", arg), f)
 			return
 		}
 	}
@@ -41,7 +41,7 @@ func Time(args []string, f aprs.Frame, client *APRS.UserClient) {
 	loc, err := time.LoadLocation(location)
 	if err != nil {
 		// Handle error if the timezone is invalid
-		client.AprsTextReply(fmt.Sprintf("Error: Invalid timezone %s", location), f)
+		client.Reply(fmt.Sprintf("Error: Invalid timezone %s", location), f)
 		return
 	}
 
@@ -50,5 +50,5 @@ func Time(args []string, f aprs.Frame, client *APRS.UserClient) {
 	formattedTime := currentTime.Format("02 Jan 06 15:04:05 MST")
 
 	// Send the formatted time as a reply
-	client.AprsTextReply(formattedTime, f)
+	client.Reply(formattedTime, f)
 }

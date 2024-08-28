@@ -15,10 +15,10 @@ func CalculateCommand(args []string, f aprs.Frame, client *APRS.UserClient) {
 	var input = strings.Join(args, " ")
 	calculate, err := Calculate(input)
 	if err != nil {
-		client.AprsTextReply(err.Error(), f)
+		client.Reply(err.Error(), f)
 		return
 	} else {
-		client.AprsTextReply(strconv.FormatFloat(calculate, 'g', 5, 64), f)
+		client.Reply(strconv.FormatFloat(calculate, 'g', 5, 64), f)
 		return
 	}
 }

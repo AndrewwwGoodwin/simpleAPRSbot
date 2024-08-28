@@ -80,7 +80,7 @@ func InitAPRSClient(callandSSID string, APRSPassword int, apiClients api.Clients
 	return &UserClient{CallSign: call, APRSCallAndSSID: callandSSID, APRSSsid: ssid, APRSPassword: APRSPassword, MessageQueue: messageQueue, ApiClients: apiClients}
 }
 
-func (client UserClient) AprsTextReply(text string, f aprs.Frame) {
+func (client UserClient) Reply(text string, f aprs.Frame) {
 	if len(text) <= 67 {
 		// instead of directly sending the messages, lets have a queueing system that the messages get added to.
 		// in this Queue, we can listen for acks and all. We can also then monitor the Queue to see how many messages we

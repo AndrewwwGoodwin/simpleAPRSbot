@@ -15,10 +15,10 @@ func CW(args []string, f aprs.Frame, client *APRS.UserClient) {
 	if isValid {
 		// so if the text is valid, we need to generate a string representing morse code for the input
 		var morseString = generateMorse(toEncode)
-		client.AprsTextReply(morseString, f)
+		client.Reply(morseString, f)
 		return
 	} else {
-		client.AprsTextReply("Invalid Characters found in input. a-z A-Z 0-9 only.", f)
+		client.Reply("Invalid Characters found in input. a-z A-Z 0-9 only.", f)
 	}
 }
 

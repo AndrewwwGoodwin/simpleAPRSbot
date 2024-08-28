@@ -13,6 +13,6 @@ func Ping(args []string, f aprs.Frame, client *APRS.UserClient) {
 	}
 	// reply, I threw in a magic int here to make the message unique always
 	//time.Sleep(2 * time.Second)
-	client.AprsTextReply(replyText, f)
+	client.Reply(replyText, f)
 	return
 }

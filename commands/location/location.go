@@ -17,7 +17,7 @@ func Location(args []string, f aprs.Frame, client *APRS.UserClient) {
 	case 1:
 		callerCallsign = args[0]
 	default:
-		client.AprsTextReply("Too many args", f)
+		client.Reply("Too many args", f)
 		return
 	}
 
@@ -27,7 +27,7 @@ func Location(args []string, f aprs.Frame, client *APRS.UserClient) {
 	var data, err = wrapper.GetLocation(callerCallsign)
 	if err != nil {
 		fmt.Println(err)
-		client.AprsTextReply(err.Error(), f)
+		client.Reply(err.Error(), f)
 		return
 	}
 	var locationData = data.Entries[0]
@@ -36,6 +36,6 @@ func Location(args []string, f aprs.Frame, client *APRS.UserClient) {
 	// in the future I want to send this lat/long off to some geocoding api
 	// which will then return a lot more detailed information such as city,state zipcode, county, coordinates,
 	// how long ago, via aprs.fi
-	client.AprsTextReply(locationData.Lat+" "+locationData.Lng+" via aprs.fi", f)
+	client.Reply(locationData.Lat+" "+locationData.Lng+" via aprs.fi", f)
 	return
 }

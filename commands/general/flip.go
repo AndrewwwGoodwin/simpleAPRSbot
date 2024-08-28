@@ -11,5 +11,5 @@ func Flip(args []string, f aprs.Frame, client *APRS.UserClient) {
 	var options = [2]string{"Heads", "Tails"}
 	var decideInt = rand.IntN(1000)
 	result := options[decideInt%2]
-	client.AprsTextReply(result, f)
+	client.Reply(result, f)
 }

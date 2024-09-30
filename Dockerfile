@@ -16,8 +16,6 @@ WORKDIR /
 
 COPY --from=build-stage /SimpleAPRSBot /SimpleAPRSBot
 
-EXPOSE 8080
-
 USER nonroot:nonroot
 
 ENTRYPOINT ["/SimpleAPRSBot"]

@@ -17,6 +17,9 @@ import (
 func main() {
 	// let's get started! first, build our client
 	APRSClient := initAPRSClient()
+	if APRSClient == nil {
+		panic("aprs client is nil, failed to start")
+	}
 
 	// next, crank up our threads!
 	// waits for termination so everything shuts down nicely

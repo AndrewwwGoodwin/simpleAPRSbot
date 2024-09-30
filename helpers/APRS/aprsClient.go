@@ -3,10 +3,10 @@ package APRS
 import (
 	"fmt"
 	"github.com/ebarkie/aprs"
-	"math/rand/v2"
 	"simpleAPRSbot-go/helpers/api"
 	"strconv"
 	"strings"
+	"sync"
 	"unicode/utf8"
 )
 
@@ -17,9 +17,13 @@ type UserClient struct {
 	APRSPassword    int
 	MessageQueue    *MessageQueue
 	ApiClients      api.Clients
+	MessageNumber   int
+	mutex           sync.Mutex
 }
 
-func (client UserClient) SendAck(f aprs.Frame) {
+func (client *UserClient) SendAck(f aprs.Frame) {
+	client.mutex.Lock()
+	defer client.mutex.Unlock()
 	messageNum, _ := extractMessageNumber(f.Text)
 	personWhoMessagedMe := GetAuthor(f)
 	botStation := aprs.Addr{
@@ -41,7 +45,9 @@ func (client UserClient) SendAck(f aprs.Frame) {
 	client.MessageQueue.Push(ack)
 }
 
-func (client UserClient) GenerateMessageReplyFrame(messageContent string, f aprs.Frame) aprs.Frame {
+func (client *UserClient) GenerateMessageReplyFrame(messageContent string, f aprs.Frame) aprs.Frame {
+	client.mutex.Lock()
+	defer client.mutex.Unlock()
 	personWhoMessagedMe := GetAuthor(f)
 	botStation := aprs.Addr{
 		Call: client.CallSign,
@@ -54,9 +60,10 @@ func (client UserClient) GenerateMessageReplyFrame(messageContent string, f aprs
 		Dst: botToCall,
 		Src: botStation,
 		//Path: botPath,
-		Text: ":" + EnsureLength(personWhoMessagedMe) + ":" + messageContent + "{" + strconv.Itoa(rand.IntN(999)),
+		Text: ":" + EnsureLength(personWhoMessagedMe) + ":" + messageContent + "{" + strconv.Itoa(client.MessageNumber),
 	}
 	fmt.Println(messageFrame.String())
+	client.MessageNumber++
 	return messageFrame
 }
 
@@ -73,10 +80,10 @@ func extractSSIDFromCallSSID(input string) (string, int) {
 func InitAPRSClient(callandSSID string, APRSPassword int, apiClients api.Clients) *UserClient {
 	var call, ssid = extractSSIDFromCallSSID(callandSSID)
 	var messageQueue = NewMessageQueue()
-	return &UserClient{CallSign: call, APRSCallAndSSID: callandSSID, APRSSsid: ssid, APRSPassword: APRSPassword, MessageQueue: messageQueue, ApiClients: apiClients}
+	return &UserClient{CallSign: call, APRSCallAndSSID: callandSSID, APRSSsid: ssid, APRSPassword: APRSPassword, MessageQueue: messageQueue, ApiClients: apiClients, MessageNumber: 1}
 }
 
-func (client UserClient) Reply(text string, f aprs.Frame) {
+func (client *UserClient) Reply(text string, f aprs.Frame) {
 	if len(text) <= 67 {
 		// instead of directly sending the messages, lets have a queueing system that the messages get added to.
 		// in this Queue, we can listen for acks and all. We can also then monitor the Queue to see how many messages we

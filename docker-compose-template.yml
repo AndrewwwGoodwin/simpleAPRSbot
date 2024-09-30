@@ -1,0 +1,12 @@
+services:
+  simple-aprs-bot:
+    build:
+      dockerfile: Dockerfile
+    environment:
+      - APRS_CALL=
+      - APRS_PASS=
+      - APRS_FI_API_KEY=
+      - OWM_API_KEY=
+      - OSU_CLIENT_ID=
+      - OSU_CLIENT_SECRET=
+    restart: always

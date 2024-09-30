@@ -21,5 +21,16 @@ https://osu.ppy.sh/docs/index.html
 
 Special shout out to the people @ https://github.com/ebarkie/aprs.
 
-## Required Flags
--APRS_CALL=N0CALL-0 -APRS_PASS=12345 -APRS_FI_API_KEY= -OWM_FI_API_KEY= -OSU_CLIENT_ID= -OSU_CLIENT_SECRET=
+## Running with docker-compose
+Edit the docker-compose file with your api keys
+
+docker-compose up
+
+
+## Required Environment Variables
+APRS_CALL=
+APRS_PASS=
+APRS_FI_API_KEY=
+OWM_API_KEY=
+OSU_CLIENT_ID=
+OSU_CLIENT_SECRET=

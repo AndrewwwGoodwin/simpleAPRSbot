@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"github.com/ebarkie/aprs"
 	"log"
@@ -10,6 +9,7 @@ import (
 	"os/signal"
 	"simpleAPRSbot-go/helpers/APRS"
 	"simpleAPRSbot-go/helpers/api"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -92,20 +92,40 @@ func commandListener(client *APRS.UserClient) {
 }
 
 func initAPRSClient() *APRS.UserClient {
-	var aprsCALL = flag.String("APRS_CALL", "N0CALL-0", "N0CALL-0")
-	var aprsPass = flag.Int("APRS_PASS", 000000, "00000")
-	var APRSFIkey = flag.String("APRS_FI_API_KEY", "", "APRS FI API Key")
-	var OpenWeatherMapKey = flag.String("OWM_FI_API_KEY", "", "OpenWeatherMap API Key")
-	var osuClientID = flag.Int("OSU_CLIENT_ID", 0, "OSU Client ID")
-	var osuClientSecret = flag.String("OSU_CLIENT_SECRET", "", "OSU Client Secret")
-	flag.Parse()
+	var aprsCALL, aprsCallExists = os.LookupEnv("APRS_CALL")
+	var aprsPass, aprsPassExists = os.LookupEnv("APRS_PASS")
+	var APRSFIkey, aprsFiKeyExists = os.LookupEnv("APRS_FI_API_KEY")
+	var OpenWeatherMapKey, OWMKeyExists = os.LookupEnv("OWM_API_KEY")
+	var osuClientID, osuClientIdExists = os.LookupEnv("OSU_CLIENT_ID")
+	var osuClientSecret, osuClientSecretExists = os.LookupEnv("OSU_CLIENT_SECRET")
+	if !aprsCallExists || !aprsPassExists || !aprsFiKeyExists || !OWMKeyExists || !osuClientIdExists || !osuClientSecretExists {
+		fmt.Println("APRS_CALL: " + strconv.FormatBool(aprsCallExists))
+		fmt.Println("APRS_PASS: " + strconv.FormatBool(aprsPassExists))
+		fmt.Println("APRS_FI_API_KEY: " + strconv.FormatBool(aprsFiKeyExists))
+		fmt.Println("OWM_API_KEY: " + strconv.FormatBool(OWMKeyExists))
+		fmt.Println("OSU_CLIENT_ID: " + strconv.FormatBool(osuClientIdExists))
+		fmt.Println("OSU_CLIENT_SECRET: " + strconv.FormatBool(osuClientSecretExists))
+
+		panic("cannot initialize APRS client due to missing environment variables")
+	}
+	aprsPassConv, err := strconv.Atoi(aprsPass)
+	if err != nil {
+		log.Println("Error converting APRS pass value to int")
+		return nil
+	}
+
+	osuClientIDConv, err := strconv.Atoi(osuClientID)
+	if err != nil {
+		log.Println("Error converting osu client ID to int")
+		return nil
+	}
 
 	APIClients := api.InitializeAPIClients(api.Keys{
-		OsuClientSecret:   *osuClientSecret,
-		OsuClientID:       *osuClientID,
-		OpenWeatherMapKey: *OpenWeatherMapKey,
-		APRSFIkey:         *APRSFIkey,
+		OsuClientSecret:   osuClientSecret,
+		OsuClientID:       osuClientIDConv,
+		OpenWeatherMapKey: OpenWeatherMapKey,
+		APRSFIkey:         APRSFIkey,
 	})
 
-	return APRS.InitAPRSClient(*aprsCALL, *aprsPass, APIClients)
+	return APRS.InitAPRSClient(aprsCALL, aprsPassConv, APIClients)
 }

@@ -28,9 +28,11 @@ Edit the docker-compose file with your api keys
 
 docker-compose up
 
-## Required Environment Variables
+### Required Environment Variables
 APRS_CALL= <br>
 APRS_PASS= <br>
+
+### Optional Environment Vars
 APRS_FI_API_KEY= <br>
 OWM_API_KEY= <br>
 OSU_CLIENT_ID= <br>

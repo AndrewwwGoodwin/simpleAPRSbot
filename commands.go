@@ -22,9 +22,9 @@ var commandRegistry = map[string]CommandFunc{
 	"cw":       general.CW,
 	"calc":     general.CalculateCommand,
 	"eval":     general.CalculateCommand,
-	"loc":      location.Location,
-	"location": location.Location,
-	"w":        location.Weather,
-	"weather":  location.Weather,
-	"osu":      osuCommands.Osu,
+	"loc":      location.Location, // requires aprs.fi
+	"location": location.Location, // requires aprs.fi
+	"w":        location.Weather,  // requires aprs.fi + weather keys
+	"weather":  location.Weather,  // requires aprs.fi + weather keys
+	"osu":      osuCommands.Osu,   // requires osu_client_id + osu_client_secret
 }

@@ -95,13 +95,31 @@ func commandListener(client *APRS.UserClient) {
 }
 
 func initAPRSClient() *APRS.UserClient {
+	// really, only aprsCall and aprsPass are required
 	var aprsCALL, aprsCallExists = os.LookupEnv("APRS_CALL")
 	var aprsPass, aprsPassExists = os.LookupEnv("APRS_PASS")
+
+	//for the rest of these, we can disable some commands to make the bot function without them
 	var APRSFIkey, aprsFiKeyExists = os.LookupEnv("APRS_FI_API_KEY")
 	var OpenWeatherMapKey, OWMKeyExists = os.LookupEnv("OWM_API_KEY")
 	var osuClientID, osuClientIdExists = os.LookupEnv("OSU_CLIENT_ID")
 	var osuClientSecret, osuClientSecretExists = os.LookupEnv("OSU_CLIENT_SECRET")
-	if !aprsCallExists || !aprsPassExists || !aprsFiKeyExists || !OWMKeyExists || !osuClientIdExists || !osuClientSecretExists {
+	// we need to also check to ensure that these keys aren't just empty strings
+	if APRSFIkey == "" {
+		aprsFiKeyExists = false
+	}
+	if OpenWeatherMapKey == "" {
+		OWMKeyExists = false
+	}
+	if osuClientID == "" {
+		osuClientIdExists = false
+	}
+	if osuClientSecret == "" {
+		osuClientSecretExists = false
+	}
+
+	// if we don't have an APRS login, simply exit and yell at the user
+	if !aprsCallExists || !aprsPassExists {
 		fmt.Println("APRS_CALL: " + strconv.FormatBool(aprsCallExists))
 		fmt.Println("APRS_PASS: " + strconv.FormatBool(aprsPassExists))
 		fmt.Println("APRS_FI_API_KEY: " + strconv.FormatBool(aprsFiKeyExists))
@@ -109,25 +127,50 @@ func initAPRSClient() *APRS.UserClient {
 		fmt.Println("OSU_CLIENT_ID: " + strconv.FormatBool(osuClientIdExists))
 		fmt.Println("OSU_CLIENT_SECRET: " + strconv.FormatBool(osuClientSecretExists))
 
-		panic("cannot initialize APRS client due to missing environment variables")
-	}
-	aprsPassConv, err := strconv.Atoi(aprsPass)
-	if err != nil {
-		log.Println("Error converting APRS pass value to int")
-		return nil
+		panic("cannot initialize APRS client due to missing required environment variables")
 	}
 
-	osuClientIDConv, err := strconv.Atoi(osuClientID)
-	if err != nil {
-		log.Println("Error converting osu client ID to int")
-		return nil
+	var aprsPassConv int
+	var osuClientIDConv int
+	var err error
+	// break it down to disable individual commands based on what API keys are provided
+	if !aprsFiKeyExists {
+		// disable location commands
+		fmt.Println("APRS_FI_API_KEY not provided, disabling location-dependant commands")
+		delete(commandRegistry, "location")
+		delete(commandRegistry, "loc")
+		delete(commandRegistry, "w")
+		delete(commandRegistry, "weather")
+	} else {
+		aprsPassConv, err = strconv.Atoi(aprsPass)
+		if err != nil {
+			log.Println("Error converting APRS pass value to int")
+			return nil
+		}
+	}
+	if !OWMKeyExists {
+		//disable weather commands
+		fmt.Println("OWM_API_KEY not provided, disabling weather-dependant commands")
+		delete(commandRegistry, "w")
+		delete(commandRegistry, "weather")
+	}
+	if !osuClientIdExists || !osuClientSecretExists {
+		//disable osu specific commands
+		fmt.Println("OSU_CLIENT_ID or OSU_CLIENT_SECRET not provided, disabling osu! commands")
+		delete(commandRegistry, "osu")
+	} else {
+		osuClientIDConv, err = strconv.Atoi(osuClientID)
+		if err != nil {
+			log.Println("Error converting osu client ID to int")
+			return nil
+		}
 	}
 
-	APIClients := api.InitializeAPIClients(api.Keys{
-		OsuClientSecret:   osuClientSecret,
-		OsuClientID:       osuClientIDConv,
-		OpenWeatherMapKey: OpenWeatherMapKey,
-		APRSFIkey:         APRSFIkey,
+	APIClients := api.InitializeAPIClients(&api.Keys{
+		OsuClientSecret:   &osuClientSecret,
+		OsuClientID:       &osuClientIDConv,
+		OpenWeatherMapKey: &OpenWeatherMapKey,
+		APRSFIkey:         &APRSFIkey,
 	})
 
 	return APRS.InitAPRSClient(aprsCALL, aprsPassConv, APIClients)
